@@ -18,19 +18,6 @@ class WdlVisitor(WdlV1ParserVisitor):
         tree = parser.document()
         self.visit(tree)
 
-        # I could also:
-        #   use setattr to set the visit methods
-        #   programatically, but this would require
-        #   that all of the logic would be held entirely
-        #   in the formatters.
-        #
-        #   I don't know yet if I need different logic
-        #   for the visitor that would be seperate from the
-        #   formatters. It's easy enough to change over after
-        #   wards though, just looping over all the
-        #   methods that start with `visit` and replacing
-        #   them with the visitor below
-
     def __str__(self):
         return self.formatted
 
@@ -39,7 +26,11 @@ class WdlVisitor(WdlV1ParserVisitor):
         return self.formatters[type(ctx)].format(ctx)
 
     def visitVersion(self, ctx: WdlV1Parser.VersionContext):
-        self.formatted = self.format(ctx)
+        self.formatted += self.format(ctx)
+        return self.visitChildren(ctx)
+
+    def visitTask_output(self, ctx: WdlV1Parser.Task_outputContext):
+        self.formatted += self.format(ctx)
         return self.visitChildren(ctx)
 
 
