@@ -3,13 +3,13 @@ from .grammar.WdlV1Parser import WdlV1Parser
 from .grammar.WdlV1ParserVisitor import WdlV1ParserVisitor
 from antlr4 import CommonTokenStream, InputStream
 from abc import ABC, abstractmethod
-from .formatters import formatters
+from .formatters import create_formatters_dict
 
 
 class WdlVisitor(WdlV1ParserVisitor):
     def __init__(self, input_stream):
         # Set up the formatters
-        self.formatters = formatters
+        self.formatters = create_formatters_dict()
 
         self.formatted = ""
         lexer = WdlV1Lexer(input_stream)
