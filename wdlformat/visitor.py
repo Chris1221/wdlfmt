@@ -33,6 +33,10 @@ class WdlVisitor(WdlV1ParserVisitor):
         self.formatted += self.format(ctx)
         return self.visitChildren(ctx)
 
+    def visitTask_input(self, ctx: WdlV1Parser.Task_inputContext):
+        self.formatted += self.format(ctx)
+        return self.visitChildren(ctx)
+
 
 def test():
     input = open("test/test_md5.wdl", "r").read()

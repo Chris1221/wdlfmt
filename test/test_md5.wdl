@@ -3,6 +3,7 @@ version 1.0
 task CalcMd5 {
   input {
     File input_file
+    String hi=     "hi"
   }
 
   command {
