@@ -7,7 +7,8 @@ task CalcMd5 {
   }
 
   command {
-    /bin/my_md5sum ${input_file}
+    /bin/my_md5sum2 ${input_file}
+    echo hi ; echo this is a command too
   }
 
  output {

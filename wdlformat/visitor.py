@@ -1,15 +1,21 @@
 from .grammar.WdlV1Lexer import WdlV1Lexer
-from .grammar.WdlV1Parser import WdlV1Parser
+from .grammar.WdlV1Parser import WdlV1Parser, ParserRuleContext
 from .grammar.WdlV1ParserVisitor import WdlV1ParserVisitor
 from antlr4 import CommonTokenStream, InputStream
 from abc import ABC, abstractmethod
-from .formatters import create_formatters_dict
+from .formatters import create_public_formatters_dict
 
 
 class WdlVisitor(WdlV1ParserVisitor):
     def __init__(self, input_stream):
         # Set up the formatters
-        self.formatters = create_formatters_dict()
+        self.formatters = create_public_formatters_dict()
+
+        # Set up the listeners
+        for cls, formatter in self.formatters.items():
+            setattr(
+                self, f"visit{cls.__name__.replace('Context', '')}", self.baseVisitor
+            )
 
         self.formatted = ""
         lexer = WdlV1Lexer(input_stream)
@@ -25,17 +31,21 @@ class WdlVisitor(WdlV1ParserVisitor):
         """Get the formatter for the current class"""
         return self.formatters[type(ctx)].format(ctx)
 
-    def visitVersion(self, ctx: WdlV1Parser.VersionContext):
+    def baseVisitor(self, ctx: ParserRuleContext):
         self.formatted += self.format(ctx)
         return self.visitChildren(ctx)
 
-    def visitTask_output(self, ctx: WdlV1Parser.Task_outputContext):
-        self.formatted += self.format(ctx)
-        return self.visitChildren(ctx)
+    # def visitVersion(self, ctx: WdlV1Parser.VersionContext):
+    #     self.formatted += self.format(ctx)
+    #     return self.visitChildren(ctx)
 
-    def visitTask_input(self, ctx: WdlV1Parser.Task_inputContext):
-        self.formatted += self.format(ctx)
-        return self.visitChildren(ctx)
+    # def visitTask_output(self, ctx: WdlV1Parser.Task_outputContext):
+    #     self.formatted += self.format(ctx)
+    #     return self.visitChildren(ctx)
+
+    # def visitTask_input(self, ctx: WdlV1Parser.Task_inputContext):
+    #     self.formatted += self.format(ctx)
+    #     return self.visitChildren(ctx)
 
 
 def test():

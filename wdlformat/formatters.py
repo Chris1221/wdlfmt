@@ -1,5 +1,8 @@
 from .grammar.WdlV1Parser import WdlV1Parser, ParserRuleContext
 from abc import ABC, abstractmethod
+from tempfile import NamedTemporaryFile, mkdtemp
+from .shell_formatter import ShfmtFormatter
+from os import remove
 
 
 class Formatter(ABC):
@@ -14,9 +17,16 @@ class Formatter(ABC):
         """Class of the input to format"""
         pass
 
+    @property
+    @abstractmethod
+    def public(self):
+        """Whether or not the formatter should be used by default"""
+        pass
+
 
 class VersionFormatter(Formatter):
     formats = WdlV1Parser.VersionContext
+    public = True
 
     def format(self, input: WdlV1Parser.VersionContext, indent: int = 0) -> str:
         return f"{input.VERSION().getText()} {input.ReleaseVersion().getText()}\n"
@@ -24,6 +34,7 @@ class VersionFormatter(Formatter):
 
 class OutputFormatter(Formatter):
     formats = WdlV1Parser.Task_outputContext
+    public = True
 
     def format(self, input: WdlV1Parser.Task_outputContext, indent: int = 1) -> str:
         formatters = create_formatters_dict()
@@ -41,6 +52,7 @@ class OutputFormatter(Formatter):
 
 class InputFormatter(Formatter):
     formats = WdlV1Parser.Task_inputContext
+    public = True
 
     def format(self, input: WdlV1Parser.Task_inputContext, indent: int = 1) -> str:
         formatters = create_formatters_dict()
@@ -56,8 +68,38 @@ class InputFormatter(Formatter):
         return indent_text(f"input {{\n{indent_text(''.join(decls))}}}\n\n", indent)
 
 
+class CommandFormatter(Formatter):
+    formats = WdlV1Parser.Task_commandContext
+    public = True
+
+    def format(self, input: WdlV1Parser.Task_commandContext, indent: int = 2) -> str:
+
+        command_part_1 = subset_children(
+            input.children, WdlV1Parser.Task_command_string_partContext
+        )
+        command_part_2 = subset_children(
+            input.children, WdlV1Parser.Task_command_expr_with_stringContext
+        )
+
+        shell_script = "".join(
+            [
+                f"{command_part_1[i].getText()}{command_part_2[i].getText()}"
+                for i in range(len(command_part_1))
+            ]
+        )
+
+        formatted_command = ShfmtFormatter(shell_script).format()
+
+        formatted = "command <<<\n"
+        formatted += indent_text(formatted_command, 1)
+        formatted += ">>>\n\n"
+
+        return indent_text(formatted, 1)
+
+
 class BoundContextFormatter(Formatter):
     formats = WdlV1Parser.Bound_declsContext
+    public = False
 
     def format(self, input: WdlV1Parser.Bound_declsContext, indent: int = 2) -> str:
         formatted = indent_text(
@@ -68,6 +110,7 @@ class BoundContextFormatter(Formatter):
 
 class AnyContextFormatter(Formatter):
     formats = WdlV1Parser.Any_declsContext
+    public = False
 
     def format(self, input: WdlV1Parser.Any_declsContext, indent: int = 2) -> str:
         formatted = indent_text(
@@ -85,8 +128,17 @@ def indent_text(text, level=0, spaces=4):
     return "".join([f"{' '*spaces*level}{line}" for line in text.splitlines(True)])
 
 
+def create_public_formatters_dict():
+    """Create a dictionary of all public formatters"""
+    formatters = {}
+    for formatter in Formatter.__subclasses__():
+        if formatter.public:
+            formatters[formatter().formats] = formatter()
+    return formatters
+
+
 def create_formatters_dict():
-    """Create a dictionary of all available formatters"""
+    """Create a dictionary of all formatters"""
     formatters = {}
     for formatter in Formatter.__subclasses__():
         formatters[formatter().formats] = formatter()
