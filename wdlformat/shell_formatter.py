@@ -8,6 +8,8 @@ class ShellFormatter(ABC):
     def __init__(self, command):
         self.command = command
 
+        assert self.enabled, f"{self.__class__.__name__} is not enabled"
+
     @abstractmethod
     def format(self) -> str:
         """Format a file with a given formatter"""
@@ -24,8 +26,6 @@ class ShfmtFormatter(ShellFormatter):
     enabled = True
 
     def format(self) -> str:
-        assert self.enabled
-
         try:
             with NamedTemporaryFile(delete=False) as tmpfile:
                 tmpfile.write(self.command.encode("utf-8"))
