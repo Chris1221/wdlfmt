@@ -11,11 +11,11 @@ class WdlVisitor(WdlV1ParserVisitor):
         # Set up the formatters
         self.formatters = create_public_formatters_dict()
 
-        # Set up the listeners
-        for cls, formatter in self.formatters.items():
-            setattr(
-                self, f"visit{cls.__name__.replace('Context', '')}", self.baseVisitor
-            )
+        # # Set up the listeners
+        # for cls, formatter in self.formatters.items():
+        #     setattr(
+        #         self, f"visit{cls.__name__.replace('Context', '')}", self.baseVisitor
+        #     )
 
         self.formatted = ""
         lexer = WdlV1Lexer(input_stream)
@@ -32,6 +32,10 @@ class WdlVisitor(WdlV1ParserVisitor):
         return self.formatters[type(ctx)].format(ctx)
 
     def baseVisitor(self, ctx: ParserRuleContext):
+        self.formatted += self.format(ctx)
+        return self.visitChildren(ctx)
+
+    def visitTask(self, ctx: WdlV1Parser.TaskContext):
         self.formatted += self.format(ctx)
         return self.visitChildren(ctx)
 
