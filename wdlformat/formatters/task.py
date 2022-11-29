@@ -1,27 +1,11 @@
-from .grammar.WdlV1Parser import WdlV1Parser, ParserRuleContext
-from abc import ABC, abstractmethod
-from tempfile import NamedTemporaryFile, mkdtemp
+from ..grammar.WdlV1Parser import WdlV1Parser
 from .shell_formatter import ShfmtFormatter
-from os import remove
-
-
-class Formatter(ABC):
-    @abstractmethod
-    def format(self, input: ParserRuleContext, indent: int = 0) -> str:
-        """Logic for formatting the input"""
-        pass
-
-    @property
-    @abstractmethod
-    def formats(self):
-        """Class of the input to format"""
-        pass
-
-    @property
-    @abstractmethod
-    def public(self):
-        """Whether or not the formatter should be used by default"""
-        pass
+from .common import (
+    Formatter,
+    indent_text,
+    subset_children,
+)
+from typing import Dict, Type
 
 
 class VersionFormatter(Formatter):
@@ -47,22 +31,32 @@ class TaskFormatter(Formatter):
 
         The order of the sections is not configurable.
         """
-        # task name {
-        #   input {
-        #   }
-        #   command {
-        #   }
-        #   output {
-        #   }
-        #   runtime {
-        #    }
-        # }
         formatted = f"task {input.Identifier().getText()} {{\n"
-        formatters = create_public_formatters_dict()
+        formatters = collect_task_formatters()
 
         for child in input.children:
-            if type(child) in formatters:
-                formatted += formatters[type(child)].format(child, indent=1)
+
+            # If the child itself has children then
+            # it is a block section and must be formatted separately
+
+            if hasattr(child, "children"):
+                if len(child.children) == 1:
+                    # If the child has only one child then it is a section
+                    grandchild = child.children[0]
+                    if type(grandchild) in formatters:
+                        formatted += formatters[type(grandchild)].format(
+                            grandchild, indent + 1
+                        )
+                else:
+                    # I don't know what case would have multiple
+                    # children yet but I'm sure it will come up
+                    raise NotImplementedError("Multiple children not implemented")
+
+            else:
+                # If the child has no children then it is a single line
+                # and can be formatted directly
+                if type(child) in formatters:
+                    formatted += formatters[type(child)].format(child, indent + 1)
 
         formatted += "}\n\n"
         return formatted
@@ -73,7 +67,7 @@ class OutputFormatter(Formatter):
     public = True
 
     def format(self, input: WdlV1Parser.Task_outputContext, indent: int = 1) -> str:
-        formatters = create_formatters_dict()
+        formatters = collect_task_formatters(False)
 
         declsContexts = subset_children(input.children, WdlV1Parser.Bound_declsContext)
         decls = "".join(
@@ -91,7 +85,7 @@ class InputFormatter(Formatter):
     public = True
 
     def format(self, input: WdlV1Parser.Task_inputContext, indent: int = 1) -> str:
-        formatters = create_formatters_dict()
+        formatters = collect_task_formatters(False)
 
         declsContexts = subset_children(input.children, WdlV1Parser.Any_declsContext)
         decls = "".join(
@@ -138,7 +132,7 @@ class RuntimeFormatter(Formatter):
     public = True
 
     def format(self, input: WdlV1Parser.Task_runtimeContext, indent: int = 1) -> str:
-        formatters = create_formatters_dict()
+        formatters = collect_task_formatters(False)
 
         runtime_kvContexts = subset_children(
             input.children, WdlV1Parser.Task_runtime_kvContext
@@ -160,7 +154,7 @@ class RuntimeKVContext(Formatter):
     public = False
 
     def format(self, input: WdlV1Parser.Task_runtime_kvContext, indent: int = 1) -> str:
-        formatters = create_formatters_dict()
+        formatters = collect_task_formatters(False)
 
         key = input.Identifier().getText()
         value = subset_children(input.children, WdlV1Parser.ExprContext)[0]
@@ -214,26 +208,12 @@ class AnyContextFormatter(Formatter):
         return f"{formatted}\n"
 
 
-def subset_children(children, types):
-    return [i for i in children if isinstance(i, types)]
-
-
-def indent_text(text, level=0, spaces=4):
-    return "".join([f"{' '*spaces*level}{line}" for line in text.splitlines(True)])
-
-
-def create_public_formatters_dict():
-    """Create a dictionary of all public formatters"""
+def collect_task_formatters(only_public: bool = True):
+    """Collect all the formatters for tasks"""
     formatters = {}
     for formatter in Formatter.__subclasses__():
-        if formatter.public:
-            formatters[formatter().formats] = formatter()
-    return formatters
+        if only_public and not formatter.public:
+            continue
 
-
-def create_formatters_dict():
-    """Create a dictionary of all formatters"""
-    formatters = {}
-    for formatter in Formatter.__subclasses__():
         formatters[formatter().formats] = formatter()
     return formatters

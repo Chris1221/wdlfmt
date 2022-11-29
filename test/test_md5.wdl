@@ -1,6 +1,9 @@
 version 1.0
 
+# Comment this is a comment
+
 task CalcMd5 {
+  # this is also a comment
   input {
     File input_file
     String hi=     "hi"
