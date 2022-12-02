@@ -6,21 +6,21 @@ from ..grammar.WdlV1Parser import (
 )
 from abc import ABC, abstractmethod
 
+DEBUG = True
+
 
 class CommentContext(ParserRuleContext):
     __slots__ = "parser"
 
-    def __init__(
-        self, parser, parent: ParserRuleContext = None, invokingState: int = -1
-    ):
-        super().__init__(parent, invokingState)
-        self.parser = parser
+    def __init__(self, token):
+        super().__init__(None, -1)
+        self.token = token
 
     def getRuleIndex(self):
         return WdlV1Parser.RULE_task
 
     def getText(self):
-        return self.parser.text
+        return self.token.text
 
     def enterRule(self, listener: ParseTreeListener):
         if hasattr(listener, "enterTask"):
@@ -81,16 +81,10 @@ def create_formatters_dict():
     return formatters
 
 
-class MetaCommentFormatter(Formatter):
-    formats = WdlV1Parser.Meta_stringContext
-    public = True
-
-    def format(self, input: WdlV1Parser.Meta_stringContext, indent: int = 0) -> str:
-        return f"# {input.getText()}\n"
-
-
 def flatten_tree_and_insert_comments(tree, comments, idxs, found=[], found_comments=[]):
     """Flatten the tree and insert comments in the right place"""
+
+    print(f"Initial found: {found}")
 
     # If we've already found the comment, don't do anything
     for f in found:
@@ -102,20 +96,28 @@ def flatten_tree_and_insert_comments(tree, comments, idxs, found=[], found_comme
             comments.remove(f)
 
     for idx, comment in zip(idxs, comments):
+        print("Checking idx: ", idx)
+        set = False
 
         # If we've already found the comment, don't do anything
-        if idx in found:
-            continue
 
         for child in tree.children:
 
+            if set:
+                break
+
+            if idx in found:
+                continue
+
             # If the child is a comment, skip it
-            if isinstance(child, CommentContext):
+            # I know... this is a hack
+            if isinstance(child, CommentContext) or "Comment" in str(type(child)):
                 continue
 
             if hasattr(child, "children"):
                 # Check if the comment is in the children
                 tkn_index = child.start.tokenIndex
+
                 if tkn_index >= idx:
                     # If it is, insert the comment
                     tree.children.insert(tree.children.index(child), comment)
@@ -124,11 +126,17 @@ def flatten_tree_and_insert_comments(tree, comments, idxs, found=[], found_comme
                     break
                 else:
                     # If it isn't, recurse
+                    nfound = len(found)
                     child, found, found_comments = flatten_tree_and_insert_comments(
                         child, comments, idxs, found, found_comments
                     )
+                    if len(found) > nfound:
+                        print(f"Found comment: {found[-1]}")
+                        set = True
+                        tree.children[tree.children.index(child)] = child
+                        break
+
                     # Replace the child with the new child
-                    tree.children[tree.children.index(child)] = child
             else:
                 tkn_idx = child.symbol.tokenIndex
                 if tkn_idx >= idx:

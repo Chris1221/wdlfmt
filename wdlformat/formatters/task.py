@@ -1,11 +1,8 @@
 from ..grammar.WdlV1Parser import WdlV1Parser
 from .shell_formatter import ShfmtFormatter
-from .common import (
-    Formatter,
-    indent_text,
-    subset_children,
-)
+from .common import Formatter, indent_text, subset_children, CommentContext
 from typing import Dict, Type
+import wdlformat
 
 
 class VersionFormatter(Formatter):
@@ -38,6 +35,10 @@ class TaskFormatter(Formatter):
 
             # If the child itself has children then
             # it is a block section and must be formatted separately
+
+            if isinstance(child, CommentContext):
+                formatted += formatters[type(child)].format(child, indent + 1)
+                continue
 
             if hasattr(child, "children"):
                 if len(child.children) == 1:
@@ -206,6 +207,14 @@ class AnyContextFormatter(Formatter):
             level=indent,
         )
         return f"{formatted}\n"
+
+
+class CommentFormatter(Formatter):
+    formats = wdlformat.formatters.common.CommentContext
+    public = True
+
+    def format(self, input: CommentContext, indent: int = 0) -> str:
+        return indent_text("# " + input.getText().strip("#") + "\n", indent)
 
 
 def collect_task_formatters(only_public: bool = True):

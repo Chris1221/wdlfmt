@@ -13,7 +13,8 @@ task CalcMd5 {
     /bin/my_md5sum2 ${input_file}
     echo hi ; echo this is a command too
   }
-
+  
+  # comment #3
  output {
     File value = "md5sum.txt"
     File value2 = "blah.txt"

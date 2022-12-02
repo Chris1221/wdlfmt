@@ -44,6 +44,8 @@ class WdlVisitor(WdlV1ParserVisitor):
                 comment_tokens.append(token)
                 idxs.append(token.tokenIndex)
 
+        print("Number of comments:", len(comment_tokens))
+
         comment_ctx = [CommentContext(token) for token in comment_tokens]
 
         # stream.tokens = new_tokens
@@ -63,8 +65,12 @@ class WdlVisitor(WdlV1ParserVisitor):
         tree = parser.document()
 
         # Recusively flatten the tre and insert the comments
-        tree = flatten_tree_and_insert_comments(tree, comment_ctx, idxs)
-        sdfasd
+        print(tree.children)
+        print(comment_ctx)
+        print(idxs)
+        tree, _, _ = flatten_tree_and_insert_comments(tree, comment_ctx, idxs, [])
+        print(tree.children)
+        print(tree.children[2].children[0].children)
         self.visit(tree)
 
     def __str__(self):
@@ -82,12 +88,13 @@ class WdlVisitor(WdlV1ParserVisitor):
         self.formatted += self.format(ctx)
         return self.visitChildren(ctx)
 
-    def visitMeta_string(self, ctx: WdlV1Parser.Meta_stringContext):
+    def visitComment(self, ctx: CommentContext):
         self.formatted += self.format(ctx)
         return self.visitChildren(ctx)
 
 
 def test():
-    input = open("test/test_md5.wdl", "r").read()
-    input_stream = InputStream(input)
+    with open("test/test_md5.wdl", "r") as f:
+        input_stream = InputStream(f.read())
+
     print(WdlVisitor(input_stream))
