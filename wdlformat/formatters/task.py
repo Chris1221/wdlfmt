@@ -37,7 +37,7 @@ class TaskFormatter(Formatter):
             # it is a block section and must be formatted separately
 
             if isinstance(child, CommentContext):
-                formatted += formatters[type(child)].format(child, indent + 1)
+                formatted += formatters[type(child)].format(child, indent + 1, True)
                 continue
 
             if hasattr(child, "children"):
@@ -89,14 +89,26 @@ class InputFormatter(Formatter):
         formatters = collect_task_formatters(False)
 
         declsContexts = subset_children(input.children, WdlV1Parser.Any_declsContext)
-        decls = "".join(
-            [
-                formatters[declsContext.__class__].format(declsContext)
-                for declsContext in declsContexts
-            ]
-        )
 
-        return indent_text(f"input {{\n{indent_text(''.join(decls))}}}\n\n", indent)
+        formatted = ""
+
+        for child in input.children:
+            if isinstance(child, CommentContext):
+                formatted += formatters[type(child)].format(child, indent, True)
+
+            if isinstance(child, WdlV1Parser.Any_declsContext):
+                formatted += formatters[type(child)].format(child, indent)
+
+        # decls = "".join(
+        #     [
+        #         formatters[declsContext.__class__].format(declsContext)
+        #         for declsContext in declsContexts
+        #     ]
+        # )
+
+        # breakpoint()
+
+        return indent_text(f"input {{\n{indent_text(''.join(formatted))}}}\n\n", indent)
 
 
 class CommandFormatter(Formatter):
@@ -213,8 +225,13 @@ class CommentFormatter(Formatter):
     formats = wdlformat.formatters.common.CommentContext
     public = True
 
-    def format(self, input: CommentContext, indent: int = 0) -> str:
-        return indent_text("# " + input.getText().strip("#") + "\n", indent)
+    def format(
+        self, input: CommentContext, indent: int = 0, force: bool = False
+    ) -> str:
+        if input.top_level or force:
+            return indent_text("# " + input.getText().strip("#") + "\n", indent)
+        else:
+            return ""
 
 
 def collect_task_formatters(only_public: bool = True):

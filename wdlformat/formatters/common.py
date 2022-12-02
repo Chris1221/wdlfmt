@@ -81,7 +81,9 @@ def create_formatters_dict():
     return formatters
 
 
-def flatten_tree_and_insert_comments(tree, comments, idxs, found=[], found_comments=[]):
+def flatten_tree_and_insert_comments(
+    tree, comments, idxs, found=[], found_comments=[], toplevel=True
+):
     """Flatten the tree and insert comments in the right place"""
 
     print(f"Initial found: {found}")
@@ -97,14 +99,17 @@ def flatten_tree_and_insert_comments(tree, comments, idxs, found=[], found_comme
 
     for idx, comment in zip(idxs, comments):
         print("Checking idx: ", idx)
-        set = False
+        # set = False
 
         # If we've already found the comment, don't do anything
 
+        # if idx == 18:
+        #     breakpoint()
+
         for child in tree.children:
 
-            if set:
-                break
+            # if set:
+            #     break
 
             if idx in found:
                 continue
@@ -120,6 +125,7 @@ def flatten_tree_and_insert_comments(tree, comments, idxs, found=[], found_comme
 
                 if tkn_index >= idx:
                     # If it is, insert the comment
+                    comment.top_level = toplevel
                     tree.children.insert(tree.children.index(child), comment)
                     found.append(idx)
                     found_comments.append(comment)
@@ -128,19 +134,19 @@ def flatten_tree_and_insert_comments(tree, comments, idxs, found=[], found_comme
                     # If it isn't, recurse
                     nfound = len(found)
                     child, found, found_comments = flatten_tree_and_insert_comments(
-                        child, comments, idxs, found, found_comments
+                        child, comments, idxs, found, found_comments, False
                     )
                     if len(found) > nfound:
                         print(f"Found comment: {found[-1]}")
-                        set = True
+                        # set = True
                         tree.children[tree.children.index(child)] = child
                         break
 
-                    # Replace the child with the new child
             else:
                 tkn_idx = child.symbol.tokenIndex
                 if tkn_idx >= idx:
                     print(f"Adding at {tkn_idx} {comment}")
+                    comment.top_level = toplevel
                     tree.children.insert(tree.children.index(child), comment)
                     found += [idx]
                     found_comments += [comment]

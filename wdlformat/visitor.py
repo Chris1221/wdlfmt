@@ -68,7 +68,9 @@ class WdlVisitor(WdlV1ParserVisitor):
         print(tree.children)
         print(comment_ctx)
         print(idxs)
-        tree, _, _ = flatten_tree_and_insert_comments(tree, comment_ctx, idxs, [])
+        tree, _, _ = flatten_tree_and_insert_comments(
+            tree, comment_ctx, idxs, [], [], True
+        )
         print(tree.children)
         print(tree.children[2].children[0].children)
         self.visit(tree)
