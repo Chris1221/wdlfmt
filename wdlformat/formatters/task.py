@@ -1,6 +1,11 @@
 from ..grammar.WdlV1Parser import WdlV1Parser
 from .shell_formatter import ShfmtFormatter
-from .common import Formatter, indent_text, subset_children, CommentContext
+from wdlformat.formatters.common import (
+    Formatter,
+    indent_text,
+    subset_children,
+    CommentContext,
+)
 from typing import Dict, Type
 import wdlformat
 
@@ -36,16 +41,18 @@ class TaskFormatter(Formatter):
             # If the child itself has children then
             # it is a block section and must be formatted separately
 
-            if isinstance(child, CommentContext):
-                formatted += formatters[type(child)].format(child, indent + 1, True)
+            if "Comment" in str(type(child)):
+                formatted += (
+                    formatters[str(type(child))].format(child, indent + 1, True) + "\n"
+                )
                 continue
 
             if hasattr(child, "children"):
                 if len(child.children) == 1:
                     # If the child has only one child then it is a section
                     grandchild = child.children[0]
-                    if type(grandchild) in formatters:
-                        formatted += formatters[type(grandchild)].format(
+                    if str(type(grandchild)) in formatters:
+                        formatted += formatters[str(type(grandchild))].format(
                             grandchild, indent + 1
                         )
                 else:
@@ -56,8 +63,8 @@ class TaskFormatter(Formatter):
             else:
                 # If the child has no children then it is a single line
                 # and can be formatted directly
-                if type(child) in formatters:
-                    formatted += formatters[type(child)].format(child, indent + 1)
+                if str(type(child)) in formatters:
+                    formatted += formatters[str(type(child))].format(child, indent + 1)
 
         formatted += "}\n\n"
         return formatted
@@ -70,15 +77,18 @@ class OutputFormatter(Formatter):
     def format(self, input: WdlV1Parser.Task_outputContext, indent: int = 1) -> str:
         formatters = collect_task_formatters(False)
 
-        declsContexts = subset_children(input.children, WdlV1Parser.Bound_declsContext)
-        decls = "".join(
-            [
-                formatters[declsContext.__class__].format(declsContext)
-                for declsContext in declsContexts
-            ]
-        )
+        formatted = ""
 
-        return indent_text(f"output {{\n{indent_text(''.join(decls))}}}\n\n", indent)
+        for child in input.children:
+            if isinstance(child, CommentContext):
+                formatted += formatters[str(type(child))].format(child, indent, True)
+
+            if isinstance(child, WdlV1Parser.Bound_declsContext):
+                formatted += formatters[str(type(child))].format(child, indent)
+
+        return indent_text(
+            f"output {{\n{indent_text(''.join(formatted))}}}\n\n", indent
+        )
 
 
 class InputFormatter(Formatter):
@@ -94,10 +104,10 @@ class InputFormatter(Formatter):
 
         for child in input.children:
             if isinstance(child, CommentContext):
-                formatted += formatters[type(child)].format(child, indent, True)
+                formatted += formatters[str(type(child))].format(child, indent, True)
 
             if isinstance(child, WdlV1Parser.Any_declsContext):
-                formatted += formatters[type(child)].format(child, indent)
+                formatted += formatters[str(type(child))].format(child, indent)
 
         # decls = "".join(
         #     [
@@ -147,18 +157,17 @@ class RuntimeFormatter(Formatter):
     def format(self, input: WdlV1Parser.Task_runtimeContext, indent: int = 1) -> str:
         formatters = collect_task_formatters(False)
 
-        runtime_kvContexts = subset_children(
-            input.children, WdlV1Parser.Task_runtime_kvContext
-        )
-        runtime_kv = "".join(
-            [
-                formatters[runtime_kvContext.__class__].format(runtime_kvContext)
-                for runtime_kvContext in runtime_kvContexts
-            ]
-        )
+        formatted = ""
+
+        for child in input.children:
+            if isinstance(child, CommentContext):
+                formatted += formatters[str(type(child))].format(child, indent, True)
+
+            if isinstance(child, WdlV1Parser.Task_runtime_kvContext):
+                formatted += formatters[str(type(child))].format(child, indent)
 
         return indent_text(
-            f"runtime {{\n{indent_text(''.join(runtime_kv))}}}\n\n", indent
+            f"runtime {{\n{indent_text(''.join(formatted))}}}\n\n", indent
         )
 
 
@@ -173,7 +182,7 @@ class RuntimeKVContext(Formatter):
         value = subset_children(input.children, WdlV1Parser.ExprContext)[0]
 
         return indent_text(
-            f"{key}: {formatters[value.__class__].format(value)}\n", indent
+            f"{key}: {formatters[str(value.__class__)].format(value)}\n", indent
         )
 
 
@@ -241,5 +250,5 @@ def collect_task_formatters(only_public: bool = True):
         if only_public and not formatter.public:
             continue
 
-        formatters[formatter().formats] = formatter()
+        formatters[str(formatter().formats)] = formatter()
     return formatters

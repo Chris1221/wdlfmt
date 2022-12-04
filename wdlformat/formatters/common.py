@@ -61,7 +61,7 @@ def collect_common_formatters():
     formatters = {}
     for formatter in Formatter.__subclasses__():
         if formatter().public:
-            formatters[formatter().formats] = formatter()
+            formatters[str(formatter().formats)] = formatter()
     return formatters
 
 
@@ -125,6 +125,7 @@ def flatten_tree_and_insert_comments(
 
                 if tkn_index >= idx:
                     # If it is, insert the comment
+                    breakpoint()
                     comment.top_level = toplevel
                     tree.children.insert(tree.children.index(child), comment)
                     found.append(idx)
@@ -146,6 +147,7 @@ def flatten_tree_and_insert_comments(
                 tkn_idx = child.symbol.tokenIndex
                 if tkn_idx >= idx:
                     print(f"Adding at {tkn_idx} {comment}")
+                    breakpoint()
                     comment.top_level = toplevel
                     tree.children.insert(tree.children.index(child), comment)
                     found += [idx]
@@ -153,3 +155,97 @@ def flatten_tree_and_insert_comments(
                     break
 
     return tree, found, found_comments
+
+
+def get_position(node):
+    if hasattr(node, "start"):
+        return node.start.tokenIndex
+    else:
+        return node.symbol.tokenIndex
+
+
+def flatten_context_tree(tree, flat=[]):
+    for child in tree.children:
+        if hasattr(child, "children"):
+            flat.append(get_position(child))
+            flat = flatten_context_tree(child)
+        else:
+            flat.append(get_position(child))
+
+    return flat
+
+
+def find_elm_with_given_index_in_tree(tree, idx):
+    """Find the element with the given index in the tree"""
+
+    # Prefer top-level elements, because this means
+    # that the comment is before the first element
+    # in the subtree
+    if get_position(tree) == idx:
+        return tree
+
+    else:
+        for child in tree.children:
+            if hasattr(child, "children"):
+                elm = find_elm_with_given_index_in_tree(child, idx)
+                if elm:
+                    return elm
+            else:
+                if get_position(child) == idx:
+                    return child
+    return None
+
+
+def find_comment_neighbours(comment_idxs, all_idxs, tree):
+    """Find the neighbour elements of a comment in the tree"""
+    neighbours = []
+    found = False
+    for cidx in comment_idxs:
+        for idx in all_idxs:
+            if idx > cidx:
+                neighbours.append(find_elm_with_given_index_in_tree(tree, idx))
+                found = True
+                break
+
+        if not found:
+            neighbours.append(find_elm_with_given_index_in_tree(tree, all_idxs[-1]))
+
+    return neighbours
+
+
+def insert_comment_into_tree(tree, comment, neighbour):
+    """Find the neighbour in the tree and insert the comment
+    at the same scope level"""
+
+    if tree == neighbour:
+        comment.top_level = "DocumentContext" in str(type(tree.parentCtx))
+        tree.parentCtx.children.insert(tree.parentCtx.children.index(tree), comment)
+        return tree.parentCtx
+
+    else:
+        if hasattr(tree, "children") and "Comment" not in str(type(tree)):
+            for child in tree.children:
+                if child == neighbour:
+                    comment.top_level = "DocumentContext" in str(type(tree))
+                    # breakpoint()
+                    tree.children.insert(tree.children.index(child), comment)
+                    return tree
+                else:
+                    child_index = tree.children.index(child)
+                    child = insert_comment_into_tree(child, comment, neighbour)
+                    tree.children[child_index] = child
+
+        return tree
+
+
+def insert_comments(tree, comments, comment_idxs):
+    """Insert comments in the tree"""
+    # Find the neighbour elements of the comments
+    all_idxs = flatten_context_tree(tree)
+    neighbours = find_comment_neighbours(comment_idxs, all_idxs, tree)
+
+    # Insert the comments in the tree
+    for comment, neighbour in zip(comments, neighbours):
+        tree = insert_comment_into_tree(tree, comment, neighbour)
+
+    return tree

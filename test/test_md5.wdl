@@ -19,13 +19,17 @@ task CalcMd5 {
   
   # comment #3
   output {
-      File value = "md5sum.txt"
-      File value2 = "blah.txt"
+    # Output comment
+    File value = "md5sum.txt"
+    File value2 = "blah.txt"
   }
 
  runtime {
+    # Runtime comment
     docker: "quay.io/briandoconnor/dockstore-tool-md5sum:1.0.2"
     cpu: 1
     memory: "512 MB"
  }
+# WHat about there?
 }
+# And here?
