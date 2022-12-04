@@ -33,7 +33,7 @@ class TaskFormatter(Formatter):
 
         The order of the sections is not configurable.
         """
-        formatted = f"task {input.Identifier().getText()} {{\n"
+        formatted = f"\ntask {input.Identifier().getText()} {{\n"
         formatters = collect_task_formatters()
 
         for child in input.children:
@@ -42,8 +42,8 @@ class TaskFormatter(Formatter):
             # it is a block section and must be formatted separately
 
             if "Comment" in str(type(child)):
-                formatted += (
-                    formatters[str(type(child))].format(child, indent + 1, True) + "\n"
+                formatted += formatters[str(type(child))].format(
+                    child, indent + 1, True
                 )
                 continue
 
@@ -87,7 +87,7 @@ class OutputFormatter(Formatter):
                 formatted += formatters[str(type(child))].format(child, indent)
 
         return indent_text(
-            f"output {{\n{indent_text(''.join(formatted))}}}\n\n", indent
+            f"\noutput {{\n{indent_text(''.join(formatted))}}}\n\n", indent
         )
 
 
@@ -118,7 +118,9 @@ class InputFormatter(Formatter):
 
         # breakpoint()
 
-        return indent_text(f"input {{\n{indent_text(''.join(formatted))}}}\n\n", indent)
+        return indent_text(
+            f"\ninput {{\n{indent_text(''.join(formatted))}}}\n\n", indent
+        )
 
 
 class CommandFormatter(Formatter):
@@ -143,7 +145,7 @@ class CommandFormatter(Formatter):
 
         formatted_command = ShfmtFormatter(shell_script).format()
 
-        formatted = "command <<<\n"
+        formatted = "\ncommand <<<\n"
         formatted += indent_text(formatted_command, 1)
         formatted += ">>>\n\n"
 
@@ -167,7 +169,7 @@ class RuntimeFormatter(Formatter):
                 formatted += formatters[str(type(child))].format(child, indent)
 
         return indent_text(
-            f"runtime {{\n{indent_text(''.join(formatted))}}}\n\n", indent
+            f"\nruntime {{\n{indent_text(''.join(formatted))}}}\n\n", indent
         )
 
 
@@ -209,7 +211,7 @@ class ExprContextFormatter(Formatter):
 
 class BoundContextFormatter(Formatter):
     formats = WdlV1Parser.Bound_declsContext
-    public = False
+    public = True
 
     def format(self, input: WdlV1Parser.Bound_declsContext, indent: int = 1) -> str:
         formatted = indent_text(
@@ -238,7 +240,7 @@ class CommentFormatter(Formatter):
         self, input: CommentContext, indent: int = 0, force: bool = False
     ) -> str:
         if input.top_level or force:
-            return indent_text("# " + input.getText().strip("#") + "\n", indent)
+            return indent_text("#" + input.getText().strip().strip("#") + "\n", indent)
         else:
             return ""
 

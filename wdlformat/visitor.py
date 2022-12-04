@@ -136,7 +136,3 @@ def format_wdl(
                 f.write(str(visitor))
         else:
             print(str(visitor))
-
-
-if __name__ == "__main__":
-    format_wdl("test/test_md5.wdl")
