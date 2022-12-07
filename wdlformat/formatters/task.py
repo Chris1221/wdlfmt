@@ -71,7 +71,7 @@ class TaskFormatter(Formatter):
 
 
 class OutputFormatter(Formatter):
-    formats = WdlV1Parser.Task_outputContext
+    formats = [WdlV1Parser.Task_outputContext, WdlV1Parser.Workflow_outputContext]
     public = True
 
     def format(self, input: WdlV1Parser.Task_outputContext, indent: int = 1) -> str:
@@ -92,7 +92,7 @@ class OutputFormatter(Formatter):
 
 
 class InputFormatter(Formatter):
-    formats = WdlV1Parser.Task_inputContext
+    formats = [WdlV1Parser.Task_inputContext, WdlV1Parser.Workflow_inputContext]
     public = True
 
     def format(self, input: WdlV1Parser.Task_inputContext, indent: int = 1) -> str:
@@ -252,5 +252,9 @@ def collect_task_formatters(only_public: bool = True):
         if only_public and not formatter.public:
             continue
 
-        formatters[str(formatter().formats)] = formatter()
+        if isinstance(formatter().formats, list):
+            for format in formatter().formats:
+                formatters[str(format)] = formatter()
+        else:
+            formatters[str(formatter().formats)] = formatter()
     return formatters

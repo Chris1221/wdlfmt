@@ -47,3 +47,34 @@ task Task2 {
     String hi=     "hi"
   }
 }
+
+workflow MyWorkflow { 
+  # Test comment
+  
+  input { 
+    File myfile = "hi"
+    String yes
+  }
+
+  parameter_meta {
+    myfile: "this is a file"
+    yes: "this is a string"
+  }
+
+  String test = basename(myfile, ".bed")
+
+  call Task2 as Task{
+    input: 
+      input_file = yes 
+  }
+
+  call CalcMd5 as MD5 {
+    input: 
+      input_file = myfile
+  }
+
+  output {
+    File md5 = MD5.value
+    File md52 = MD5.value2
+  }
+}

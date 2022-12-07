@@ -10,6 +10,7 @@ from wdlformat.formatters.common import (
     collect_common_formatters,
 )
 from wdlformat.formatters.task import collect_task_formatters
+from wdlformat.formatters.workflow import collect_workflow_formatters
 
 from typing import List
 
@@ -30,8 +31,9 @@ def create_public_formatters_dict():
     """
     task_formatters = collect_task_formatters()
     common_formatters = collect_common_formatters()
+    workflow_formatters = collect_workflow_formatters()
 
-    formatters = {**task_formatters, **common_formatters}
+    formatters = {**task_formatters, **common_formatters, **workflow_formatters}
 
     return formatters
 
@@ -103,6 +105,10 @@ class WdlVisitor(WdlV1ParserVisitor):
         return self.visitChildren(ctx)
 
     def visitTask(self, ctx: WdlV1Parser.TaskContext):
+        self.formatted += self.format(ctx)
+        return self.visitChildren(ctx)
+
+    def visitWorkflow(self, ctx: WdlV1Parser.WorkflowContext):
         self.formatted += self.format(ctx)
         return self.visitChildren(ctx)
 
