@@ -26,7 +26,7 @@ class WorkflowFormatter(Formatter):
         The order of the sections is not configurable.
         """
         formatted = f"\nworkflow {input.Identifier().getText()} {{\n"
-        formatters = collect_workflow_formatters()
+        formatters = collect_workflow_formatters(False)
 
         for child in input.children:
 
@@ -58,6 +58,113 @@ class WorkflowFormatter(Formatter):
 
         formatted += "}\n\n"
         return formatted
+
+
+class ParameterMetaFormatter(Formatter):
+    formats = WdlV1Parser.Parameter_metaContext
+    public = False
+
+    def format(self, input: WdlV1Parser.Parameter_metaContext, indent: int = 0) -> str:
+        formatters = collect_workflow_formatters(False)
+
+        formatted = f"parameter_meta {{\n"
+        for child in input.children:
+            if "Comment" in str(type(child)):
+                formatted += f"{child.getText()}\n"
+            elif "Meta_kvContext" in str(type(child)):
+                formatted += formatters[str(type(child))].format(child, indent)
+
+        formatted += "}\n\n"
+        formatted = indent_text(formatted, indent)
+        return formatted
+
+
+class MetaKVFormatter(Formatter):
+    formats = WdlV1Parser.Meta_kvContext
+    public = False
+
+    def format(self, input: WdlV1Parser.Meta_kvContext, indent: int = 0) -> str:
+        name = input.children[0].getText()
+        value = input.children[2].getText()
+        formatted = indent_text(f"{name}: {value}\n", indent)
+        return formatted
+
+
+class Inner_workflowFormatter(Formatter):
+    formats = WdlV1Parser.Inner_workflow_elementContext
+    public = False
+
+    def format(
+        self, input: WdlV1Parser.Inner_workflow_elementContext, indent: int = 0
+    ) -> str:
+        formatted = ""
+        formatters = collect_workflow_formatters(False)
+
+        for child in input.children:
+            if "Comment" in str(type(child)):
+                formatted += f"{child.getText()}\n"
+
+            else:
+                formatted += formatters[str(type(child))].format(child, indent)
+
+        return formatted
+
+
+class CallFormatter(Formatter):
+    formats = WdlV1Parser.CallContext
+    public = False
+
+    def format(self, input: WdlV1Parser.CallContext, indent: int = 0) -> str:
+
+        name_context = subset_children(input.children, WdlV1Parser.Call_nameContext)[
+            0
+        ].getText()
+        alias_context = subset_children(input.children, WdlV1Parser.Call_aliasContext)
+        body_context = subset_children(input.children, WdlV1Parser.Call_bodyContext)[0]
+
+        # If there's an alias, we have to format it as such
+        if len(alias_context) > 0:
+            alias_name = alias_context[0].getText().replace("as", "").strip()
+            formatted = f"call {name_context} as {alias_name} {{\n"
+
+        else:
+            formatted = f"call {name_context} {{\n"
+
+        formatters = collect_workflow_formatters(False)
+
+        # Now go through the statements in the body and format them
+        for child in body_context.children:
+            if "Comment" in str(type(child)):
+                formatted += f"{child.getText()}\n"
+
+            elif str(type(child)) == "<class 'antlr4.tree.Tree.TerminalNodeImpl'>":
+                pass
+
+            else:
+                formatted += formatters[str(type(child))].format(child, indent)
+
+        formatted += "}\n\n"
+        formatted = indent_text(formatted, indent)
+        return formatted
+
+
+class CallInputFormatter(Formatter):
+    formats = WdlV1Parser.Call_inputsContext
+    public = False
+
+    def format(self, input: WdlV1Parser.Call_inputsContext, indent: int = 0) -> str:
+        formatted = "input:\n"
+
+        inputs = subset_children(input.children, WdlV1Parser.Call_inputContext)
+
+        for input in inputs:
+            name = input.getText().split("=")[0].strip()
+            expr = subset_children(input.children, WdlV1Parser.ExprContext)[0].getText()
+            formatted += indent_text(f"{name} = {str(expr)}\n", indent)
+
+        return indent_text(formatted, indent)
+
+        # There may not be an alias,
 
 
 def collect_workflow_formatters(only_public: bool = True):
