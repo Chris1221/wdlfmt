@@ -1,16 +1,37 @@
-from .formatters.task import collect_task_formatters
-from .formatters.common import collect_common_formatters
+import logging
 
 
-def create_public_formatters_dict():
-    """Create a dictionary of all public formatters.
+def init_logger(level="debug", file=None, name=None):
+    """Initiate a logging instance for the model."""
 
-    Public formatters are formatters that are used by default.
-    This has to be in a seperate module to avoid circular imports.
-    """
-    task_formatters = collect_task_formatters()
-    common_formatters = collect_common_formatters()
+    assert level.upper() in dir(logging), f"Invalid log level ({level})"
 
-    formatters = {**task_formatters, **common_formatters}
+    if file is not None:
+        logging.basicConfig(filename=file, level=level.upper())
+    else:
+        logging.basicConfig(level=level.upper())
 
-    return formatters
+    return logging.getLogger(name if name else __name__)
+
+
+def get_raw_text(ctx):
+    stream = ctx.start.getInputStream()
+
+    start = ctx.start.start
+    stop = ctx.stop.stop + 1
+
+    return stream.strdata[start:stop] + "\n"
+
+
+# def create_public_formatters_dict():
+#     """Create a dictionary of all public formatters.
+
+#     Public formatters are formatters that are used by default.
+#     This has to be in a seperate module to avoid circular imports.
+#     """
+#     task_formatters = collect_task_formatters()
+#     common_formatters = collect_common_formatters()
+
+#     formatters = {**task_formatters, **common_formatters}
+
+#     return formatters

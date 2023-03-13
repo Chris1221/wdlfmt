@@ -1,5 +1,10 @@
 version 1.0
 
+struct Name {
+    String myString
+    Int myInt
+}
+
 # Comment this is a comment
 
 task CalcMd5 {
@@ -46,6 +51,17 @@ task Task2 {
     # Another comment
     String hi=     "hi"
   }
+  command <<<
+    echo hi > hi.txt; echo hello
+  >>> 
+
+  output { 
+    File hello = "hi.txt"
+  }
+
+    runtime { 
+    docker: "gcr.io/docker:v1.0"
+  }
 }
 
 workflow MyWorkflow { 
@@ -65,10 +81,13 @@ workflow MyWorkflow {
 
   call Task2 as Task{
     input: 
-      input_file = yes 
+      input_file = yes, 
+      input2 = 5
   }
 
-  call CalcMd5 as MD5 {
+  # Comment sdlkfjasd
+
+  call CalcMd5 {
     input: 
       input_file = myfile
   }
@@ -77,4 +96,6 @@ workflow MyWorkflow {
     File md5 = MD5.value
     File md52 = MD5.value2
   }
+
+
 }

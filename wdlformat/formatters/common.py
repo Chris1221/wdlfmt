@@ -6,6 +6,8 @@ from ..grammar.WdlV1Parser import (
 )
 from abc import ABC, abstractmethod
 
+from ..utils import init_logger
+
 DEBUG = True
 
 
@@ -38,6 +40,9 @@ class CommentContext(ParserRuleContext):
 
 
 class Formatter(ABC):
+    def __init__(self):
+        self.log = init_logger(name=__name__)
+
     @abstractmethod
     def format(self, input: ParserRuleContext, indent: int = 0) -> str:
         """Logic for formatting the input"""

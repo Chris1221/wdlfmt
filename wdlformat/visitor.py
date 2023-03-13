@@ -12,6 +12,8 @@ from wdlformat.formatters.common import (
 from wdlformat.formatters.task import collect_task_formatters
 from wdlformat.formatters.workflow import collect_workflow_formatters
 
+from .utils import get_raw_text, init_logger
+
 from typing import List
 
 
@@ -83,6 +85,8 @@ class WdlVisitor(WdlV1ParserVisitor):
         tree = parser.document()
         tree = insert_comments(tree, comment_ctx, idxs)
 
+        self.log = init_logger(name=__name__)
+
         # Visit the tree and format the WDL, filling in the
         # self.formatted string with the formatted WDL
         self.visit(tree)
@@ -94,7 +98,16 @@ class WdlVisitor(WdlV1ParserVisitor):
 
     def format(self, ctx):
         """Get the formatter for the current class"""
-        return self.formatters[str(type(ctx))].format(ctx)
+        try:
+            return self.formatters[str(type(ctx))].format(ctx)
+        except KeyError:
+            # If anything goes wrong, or if the formatter is not found
+            # then just return the text.
+
+            # Call a WARNING
+            self.log.warn(f"Missing formatter for: {ctx.__repr__()}")
+            self.log.debug(f"Writing the following instead:\n{get_raw_text(ctx)}\n")
+            return get_raw_text(ctx)
 
     def visitVersion(self, ctx: WdlV1Parser.VersionContext):
         self.formatted += self.format(ctx)
@@ -114,6 +127,10 @@ class WdlVisitor(WdlV1ParserVisitor):
 
     def visitComment(self, ctx: CommentContext):
         # Top level comments get an extra newline
+        self.formatted += self.format(ctx)
+        return self.visitChildren(ctx)
+
+    def visitStruct(self, ctx: WdlV1Parser.StructContext):
         self.formatted += self.format(ctx)
         return self.visitChildren(ctx)
 
@@ -141,4 +158,5 @@ def format_wdl(
             with open(file, "w") as f:
                 f.write(str(visitor))
         else:
+            print("\nBEGIN OUTPUT:\n\n")
             print(str(visitor))

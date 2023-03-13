@@ -9,6 +9,8 @@ from wdlformat.formatters.common import (
 from typing import Dict, Type
 import wdlformat
 
+from ..utils import get_raw_text
+
 
 class VersionFormatter(Formatter):
     formats = WdlV1Parser.VersionContext
@@ -132,16 +134,25 @@ class CommandFormatter(Formatter):
         command_part_1 = subset_children(
             input.children, WdlV1Parser.Task_command_string_partContext
         )
-        command_part_2 = subset_children(
-            input.children, WdlV1Parser.Task_command_expr_with_stringContext
-        )
 
-        shell_script = "".join(
-            [
-                f"{command_part_1[i].getText()}{command_part_2[i].getText()}"
-                for i in range(len(command_part_1))
-            ]
-        )
+        # Check to make sure there's only one child
+        if len(command_part_1) == 1:
+            self.log.debug("Formatting shell script")
+            shell_script = get_raw_text(command_part_1[0])
+        else:
+            self.log.warn("Multiple command parts")
+            shell_script = "".join([i for i in get_raw_text(command_part_1[0])])
+
+        # command_part_2 = subset_children(
+        #    input.children, WdlV1Parser.Task_command_expr_with_stringContext
+        # )
+
+        # shell_script = "".join(
+        #     [
+        #         f"{command_part_1[i].getText()}{command_part_2[i].getText()}"
+        #         for i in range(len(command_part_1))
+        #     ]
+        # )
 
         formatted_command = ShfmtFormatter(shell_script).format()
 
