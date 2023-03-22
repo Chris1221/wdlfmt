@@ -98,6 +98,8 @@ class WdlVisitor(WdlV1ParserVisitor):
         # self.formatted string with the formatted WDL
         self.visit(tree)
 
+        assert_text_equal(tree, self.formatted)
+
     def __str__(self):
         """The print method for the visitor will return the
         formatted WDL"""
