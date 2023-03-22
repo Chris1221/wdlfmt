@@ -71,7 +71,13 @@ def collect_common_formatters():
 
 
 def subset_children(children, types):
-    return [i for i in children if isinstance(i, types)]
+    if isinstance(types, list):
+        out = []
+        for t in types:
+            out += [i for i in children if isinstance(i, t)]
+        return out
+    else:
+        return [i for i in children if isinstance(i, types)]
 
 
 def indent_text(text, level=0, spaces=4):

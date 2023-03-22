@@ -1,7 +1,13 @@
 version 1.0
 
+# What about here
 struct Name {
+  # coooooomment
     String myString
+    # test comment
+            # whoops
+          # hi
+    # comment
     Int myInt
 }
 
@@ -22,6 +28,7 @@ task CalcMd5 {
     # Comment
     /bin/my_md5sum2 ${input_file}
     echo hi ; echo this is a command too
+    echo hi2; checking third line
   }
   
   # comment #3
@@ -43,7 +50,7 @@ task CalcMd5 {
 # And here?
 
 task Task2 { 
-    # this is also a comment
+    # this is also a comment but the indent is wrong
     #   Indented comments are conserved
   input {
     # asdfds

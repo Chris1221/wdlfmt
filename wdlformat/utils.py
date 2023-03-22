@@ -1,4 +1,7 @@
 import logging
+import re
+import difflib
+import wdlformat.formatters
 
 
 def init_logger(level="debug", file=None, name=None):
@@ -15,6 +18,12 @@ def init_logger(level="debug", file=None, name=None):
 
 
 def get_raw_text(ctx):
+
+    # Comments are just mocked up context objects so do not
+    # have the convenience methods below
+    if isinstance(ctx, wdlformat.formatters.common.CommentContext):
+        return ctx.getText() + "\n"
+
     stream = ctx.start.getInputStream()
 
     start = ctx.start.start
@@ -23,15 +32,28 @@ def get_raw_text(ctx):
     return stream.strdata[start:stop] + "\n"
 
 
-# def create_public_formatters_dict():
-#     """Create a dictionary of all public formatters.
+def assert_text_equal(original, formatted, check=True):
+    """Assert that the actual content of a formatted string
+    does not change."""
 
-#     Public formatters are formatters that are used by default.
-#     This has to be in a seperate module to avoid circular imports.
-#     """
-#     task_formatters = collect_task_formatters()
-#     common_formatters = collect_common_formatters()
+    if not check:
+        return formatted
 
-#     formatters = {**task_formatters, **common_formatters}
+    original_text = get_raw_text(original)
 
-#     return formatters
+    regex = re.compile("[^a-zA-Z]")
+
+    original_raw = regex.sub("", original_text).split()
+    formatted_raw = regex.sub("", formatted).split()
+
+    if original_raw != formatted_raw:
+        original_words = [i for i in re.split(regex, original_text) if i]
+        formatted_words = [i for i in re.split(regex, formatted) if i]
+        for diff in difflib.context_diff(original_words, formatted_words):
+            print(diff)
+
+        raise AssertionError(
+            "Formatted text not identitical to original, see the above diff"
+        )
+
+    return formatted

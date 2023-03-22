@@ -1,13 +1,11 @@
 from ..grammar.WdlV1Parser import WdlV1Parser
-from .shell_formatter import ShfmtFormatter
 from wdlformat.formatters.common import (
     Formatter,
     indent_text,
     subset_children,
-    CommentContext,
 )
-from typing import Dict, Type
-import wdlformat
+from typing import Dict
+from ..utils import get_raw_text
 
 
 class WorkflowFormatter(Formatter):
@@ -124,7 +122,7 @@ class CallFormatter(Formatter):
 
         # If there's an alias, we have to format it as such
         if len(alias_context) > 0:
-            alias_name = alias_context[0].getText().replace("as", "").strip()
+            alias_name = get_raw_text(alias_context[0]).strip().split()[1]
             formatted = f"call {name_context} as {alias_name} {{\n"
 
         else:
@@ -143,7 +141,9 @@ class CallFormatter(Formatter):
             else:
                 formatted += formatters[str(type(child))].format(child, indent)
 
-        formatted += "}\n\n"
+        # Remove the last comma
+        formatted = formatted.rstrip(",\n")
+        formatted += "\n}\n\n"
         formatted = indent_text(formatted, indent)
         return formatted
 
@@ -160,7 +160,7 @@ class CallInputFormatter(Formatter):
         for input in inputs:
             name = input.getText().split("=")[0].strip()
             expr = subset_children(input.children, WdlV1Parser.ExprContext)[0].getText()
-            formatted += indent_text(f"{name} = {str(expr)}\n", indent)
+            formatted += indent_text(f"{name} = {str(expr)},\n", indent)
 
         return indent_text(formatted, indent)
 

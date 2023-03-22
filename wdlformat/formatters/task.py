@@ -17,7 +17,7 @@ class VersionFormatter(Formatter):
     public = True
 
     def format(self, input: WdlV1Parser.VersionContext, indent: int = 0) -> str:
-        return f"{input.VERSION().getText()} {input.ReleaseVersion().getText()}\n\n"
+        return f"{input.VERSION().getText()} {input.ReleaseVersion().getText()}\n\n\n"
 
 
 class TaskFormatter(Formatter):
@@ -35,7 +35,7 @@ class TaskFormatter(Formatter):
 
         The order of the sections is not configurable.
         """
-        formatted = f"\ntask {input.Identifier().getText()} {{\n"
+        formatted = f"task {input.Identifier().getText()} {{\n"
         formatters = collect_task_formatters()
 
         for child in input.children:
@@ -89,7 +89,7 @@ class OutputFormatter(Formatter):
                 formatted += formatters[str(type(child))].format(child, indent)
 
         return indent_text(
-            f"\noutput {{\n{indent_text(''.join(formatted))}}}\n\n", indent
+            f"output {{\n{indent_text(''.join(formatted))}}}\n\n", indent
         )
 
 
@@ -120,9 +120,7 @@ class InputFormatter(Formatter):
 
         # breakpoint()
 
-        return indent_text(
-            f"\ninput {{\n{indent_text(''.join(formatted))}}}\n\n", indent
-        )
+        return indent_text(f"input {{\n{indent_text(''.join(formatted))}}}\n\n", indent)
 
 
 class CommandFormatter(Formatter):
@@ -131,32 +129,18 @@ class CommandFormatter(Formatter):
 
     def format(self, input: WdlV1Parser.Task_commandContext, indent: int = 2) -> str:
 
-        command_part_1 = subset_children(
-            input.children, WdlV1Parser.Task_command_string_partContext
+        commands = subset_children(
+            input.children,
+            [
+                WdlV1Parser.Task_command_string_partContext,
+                WdlV1Parser.Task_command_expr_with_stringContext,
+            ],
         )
 
-        # Check to make sure there's only one child
-        if len(command_part_1) == 1:
-            self.log.debug("Formatting shell script")
-            shell_script = get_raw_text(command_part_1[0])
-        else:
-            self.log.warn("Multiple command parts")
-            shell_script = "".join([i for i in get_raw_text(command_part_1[0])])
-
-        # command_part_2 = subset_children(
-        #    input.children, WdlV1Parser.Task_command_expr_with_stringContext
-        # )
-
-        # shell_script = "".join(
-        #     [
-        #         f"{command_part_1[i].getText()}{command_part_2[i].getText()}"
-        #         for i in range(len(command_part_1))
-        #     ]
-        # )
+        shell_script = "".join([get_raw_text(i) for i in commands])
 
         formatted_command = ShfmtFormatter(shell_script).format()
-
-        formatted = "\ncommand <<<\n"
+        formatted = "command <<<\n"
         formatted += indent_text(formatted_command, 1)
         formatted += ">>>\n\n"
 
@@ -180,7 +164,7 @@ class RuntimeFormatter(Formatter):
                 formatted += formatters[str(type(child))].format(child, indent)
 
         return indent_text(
-            f"\nruntime {{\n{indent_text(''.join(formatted))}}}\n\n", indent
+            f"runtime {{\n{indent_text(''.join(formatted))}}}\n\n", indent
         )
 
 

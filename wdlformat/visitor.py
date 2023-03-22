@@ -11,8 +11,9 @@ from wdlformat.formatters.common import (
 )
 from wdlformat.formatters.task import collect_task_formatters
 from wdlformat.formatters.workflow import collect_workflow_formatters
+from wdlformat.formatters.struct import collect_struct_formatters
 
-from .utils import get_raw_text, init_logger
+from .utils import get_raw_text, init_logger, assert_text_equal
 
 from typing import List
 
@@ -34,8 +35,14 @@ def create_public_formatters_dict():
     task_formatters = collect_task_formatters()
     common_formatters = collect_common_formatters()
     workflow_formatters = collect_workflow_formatters()
+    struct_formatters = collect_struct_formatters()
 
-    formatters = {**task_formatters, **common_formatters, **workflow_formatters}
+    formatters = {
+        **task_formatters,
+        **common_formatters,
+        **workflow_formatters,
+        **struct_formatters,
+    }
 
     return formatters
 
@@ -98,16 +105,23 @@ class WdlVisitor(WdlV1ParserVisitor):
 
     def format(self, ctx):
         """Get the formatter for the current class"""
-        try:
-            return self.formatters[str(type(ctx))].format(ctx)
-        except KeyError:
-            # If anything goes wrong, or if the formatter is not found
-            # then just return the text.
+        self.log.debug(f"Formatting {ctx.__repr__()}")
+        if isinstance(ctx, CommentContext):
+            check = False
+        else:
+            check = True
 
-            # Call a WARNING
+        try:
+            return assert_text_equal(
+                ctx, self.formatters[str(type(ctx))].format(ctx), check
+            )
+        except KeyError:
             self.log.warn(f"Missing formatter for: {ctx.__repr__()}")
             self.log.debug(f"Writing the following instead:\n{get_raw_text(ctx)}\n")
             return get_raw_text(ctx)
+        except AssertionError as e:
+            self.log.error("Error formatting this block. See the diff above")
+            raise e
 
     def visitVersion(self, ctx: WdlV1Parser.VersionContext):
         self.formatted += self.format(ctx)
@@ -126,7 +140,6 @@ class WdlVisitor(WdlV1ParserVisitor):
         return self.visitChildren(ctx)
 
     def visitComment(self, ctx: CommentContext):
-        # Top level comments get an extra newline
         self.formatted += self.format(ctx)
         return self.visitChildren(ctx)
 
@@ -158,5 +171,4 @@ def format_wdl(
             with open(file, "w") as f:
                 f.write(str(visitor))
         else:
-            print("\nBEGIN OUTPUT:\n\n")
             print(str(visitor))
