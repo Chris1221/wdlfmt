@@ -5,6 +5,7 @@ from wdlformat.formatters.common import (
     indent_text,
     subset_children,
     CommentContext,
+    collect_formatters,
 )
 from typing import Dict, Type
 import wdlformat
@@ -32,11 +33,12 @@ class TaskFormatter(Formatter):
         - Command
         - Output
         - Runtime
+        - Parameter meta
 
         The order of the sections is not configurable.
         """
         formatted = f"task {input.Identifier().getText()} {{\n"
-        formatters = collect_task_formatters()
+        formatters = collect_formatters(False)
 
         for child in input.children:
 
@@ -77,7 +79,7 @@ class OutputFormatter(Formatter):
     public = True
 
     def format(self, input: WdlV1Parser.Task_outputContext, indent: int = 1) -> str:
-        formatters = collect_task_formatters(False)
+        formatters = collect_formatters(False)
 
         formatted = ""
 
@@ -98,7 +100,7 @@ class InputFormatter(Formatter):
     public = True
 
     def format(self, input: WdlV1Parser.Task_inputContext, indent: int = 1) -> str:
-        formatters = collect_task_formatters(False)
+        formatters = collect_formatters(False)
 
         declsContexts = subset_children(input.children, WdlV1Parser.Any_declsContext)
 
@@ -152,7 +154,7 @@ class RuntimeFormatter(Formatter):
     public = True
 
     def format(self, input: WdlV1Parser.Task_runtimeContext, indent: int = 1) -> str:
-        formatters = collect_task_formatters(False)
+        formatters = collect_formatters(False)
 
         formatted = ""
 
@@ -173,7 +175,7 @@ class RuntimeKVContext(Formatter):
     public = False
 
     def format(self, input: WdlV1Parser.Task_runtime_kvContext, indent: int = 1) -> str:
-        formatters = collect_task_formatters(False)
+        formatters = collect_formatters(False)
 
         key = input.Identifier().getText()
         value = subset_children(input.children, WdlV1Parser.ExprContext)[0]
@@ -238,18 +240,3 @@ class CommentFormatter(Formatter):
             return indent_text("#" + input.getText().strip().strip("#") + "\n", indent)
         else:
             return ""
-
-
-def collect_task_formatters(only_public: bool = True):
-    """Collect all the formatters for tasks"""
-    formatters = {}
-    for formatter in Formatter.__subclasses__():
-        if only_public and not formatter.public:
-            continue
-
-        if isinstance(formatter().formats, list):
-            for format in formatter().formats:
-                formatters[str(format)] = formatter()
-        else:
-            formatters[str(formatter().formats)] = formatter()
-    return formatters

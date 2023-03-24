@@ -61,15 +61,6 @@ class Formatter(ABC):
         pass
 
 
-def collect_common_formatters():
-    """Collect all the formatters for tasks"""
-    formatters = {}
-    for formatter in Formatter.__subclasses__():
-        if formatter().public:
-            formatters[str(formatter().formats)] = formatter()
-    return formatters
-
-
 def subset_children(children, types):
     if isinstance(types, list):
         out = []
@@ -260,3 +251,36 @@ def insert_comments(tree, comments, comment_idxs):
         tree = insert_comment_into_tree(tree, comment, neighbour)
 
     return tree
+
+
+def collect_formatters(only_public: bool = True):
+    """Collect all the formatters for tasks"""
+    formatters = {}
+    for formatter in Formatter.__subclasses__():
+        if only_public and not formatter.public:
+            continue
+
+        if isinstance(formatter().formats, list):
+            for format in formatter().formats:
+                formatters[str(format)] = formatter()
+        else:
+            formatters[str(formatter().formats)] = formatter()
+
+    return formatters
+
+
+def create_public_formatters_dict():
+    """Create a dictionary of all public formatters.
+
+    Public formatters are "top-level" meaning they exist
+    outside a task or workflow context. A "public" versus
+    "private" dictinction is used to allow individual
+    formatters discretion over how they wish to treat
+    their elements. This also allows us to consistently
+    set indentation levels for all formatters without the
+    need to pass around a context object.
+
+    Returns:
+        dict: Dictionary of all public formatters
+    """
+    return {**collect_formatters()}

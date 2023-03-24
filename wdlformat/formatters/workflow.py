@@ -3,6 +3,7 @@ from wdlformat.formatters.common import (
     Formatter,
     indent_text,
     subset_children,
+    collect_formatters,
 )
 from typing import Dict
 from ..utils import get_raw_text
@@ -24,7 +25,7 @@ class WorkflowFormatter(Formatter):
         The order of the sections is not configurable.
         """
         formatted = f"\nworkflow {input.Identifier().getText()} {{\n"
-        formatters = collect_workflow_formatters(False)
+        formatters = collect_formatters(False)
 
         for child in input.children:
 
@@ -63,7 +64,7 @@ class ParameterMetaFormatter(Formatter):
     public = False
 
     def format(self, input: WdlV1Parser.Parameter_metaContext, indent: int = 0) -> str:
-        formatters = collect_workflow_formatters(False)
+        formatters = collect_formatters(False)
 
         formatted = f"parameter_meta {{\n"
         for child in input.children:
@@ -96,7 +97,7 @@ class Inner_workflowFormatter(Formatter):
         self, input: WdlV1Parser.Inner_workflow_elementContext, indent: int = 0
     ) -> str:
         formatted = ""
-        formatters = collect_workflow_formatters(False)
+        formatters = collect_formatters(False)
 
         for child in input.children:
             if "Comment" in str(type(child)):
@@ -128,7 +129,7 @@ class CallFormatter(Formatter):
         else:
             formatted = f"call {name_context} {{\n"
 
-        formatters = collect_workflow_formatters(False)
+        formatters = collect_formatters(False)
 
         # Now go through the statements in the body and format them
         for child in body_context.children:
@@ -164,20 +165,4 @@ class CallInputFormatter(Formatter):
 
         return indent_text(formatted, indent)
 
-        # There may not be an alias,
-
-
-def collect_workflow_formatters(only_public: bool = True):
-    """Collect all the formatters for tasks"""
-    formatters = {}
-    for formatter in Formatter.__subclasses__():
-        if only_public and not formatter.public:
-            continue
-
-        if isinstance(formatter().formats, list):
-            for format in formatter().formats:
-                formatters[str(format)] = formatter()
-        else:
-            formatters[str(formatter().formats)] = formatter()
-
-    return formatters
+        # There may not be an alias

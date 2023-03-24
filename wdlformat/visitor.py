@@ -3,54 +3,24 @@ from .grammar.WdlV1Parser import WdlV1Parser, ParserRuleContext
 from .grammar.WdlV1ParserVisitor import WdlV1ParserVisitor
 from antlr4 import CommonTokenStream, InputStream
 
-# from .utils import create_public_formatters_dict
+# This import must come before common
+# for the dependency resolution order
+# to make all subclasses visible.
+from wdlformat.formatters import task, workflow, struct
 from wdlformat.formatters.common import (
     CommentContext,
     insert_comments,
-    collect_common_formatters,
+    collect_formatters,
 )
-from wdlformat.formatters.task import collect_task_formatters
-from wdlformat.formatters.workflow import collect_workflow_formatters
-from wdlformat.formatters.struct import collect_struct_formatters
-
 from .utils import get_raw_text, init_logger, assert_text_equal
 
 from typing import List
 
 
-def create_public_formatters_dict():
-    """Create a dictionary of all public formatters.
-
-    Public formatters are "top-level" meaning they exist
-    outside a task or workflow context. A "public" versus
-    "private" dictinction is used to allow individual
-    formatters discretion over how they wish to treat
-    their elements. This also allows us to consistently
-    set indentation levels for all formatters without the
-    need to pass around a context object.
-
-    Returns:
-        dict: Dictionary of all public formatters
-    """
-    task_formatters = collect_task_formatters()
-    common_formatters = collect_common_formatters()
-    workflow_formatters = collect_workflow_formatters()
-    struct_formatters = collect_struct_formatters()
-
-    formatters = {
-        **task_formatters,
-        **common_formatters,
-        **workflow_formatters,
-        **struct_formatters,
-    }
-
-    return formatters
-
-
 class WdlVisitor(WdlV1ParserVisitor):
     def __init__(self, input_stream):
         # Set up the formatters
-        self.formatters = create_public_formatters_dict()
+        self.formatters = {**collect_formatters()}
 
         # Set up the listeners and parse the
         # token stream from the lexer
@@ -151,8 +121,7 @@ class WdlVisitor(WdlV1ParserVisitor):
 
 
 def format_wdl(
-    files: List[str] = "test/test_md5.wdl",
-    in_place: bool = False,
+    files: List[str] = "test/test_md5.wdl", in_place: bool = False, return_object=False
 ):
     """Format a WDL file
 
@@ -162,6 +131,9 @@ def format_wdl(
     """
     if isinstance(files, str):
         files = [files]
+
+    if return_object:
+        formatted_wdls = []
 
     for file in files:
         with open(file, "r") as f:
@@ -173,4 +145,15 @@ def format_wdl(
             with open(file, "w") as f:
                 f.write(str(visitor))
         else:
-            print(str(visitor))
+            if not return_object:
+                print(str(visitor))
+            else:
+                formatted_wdls.append(str(visitor))
+
+    if return_object:
+        if len(formatted_wdls) == 0:
+            raise ValueError("Failed to return any data")
+        elif len(formatted_wdls) == 1:
+            return formatted_wdls[0]
+        else:
+            return formatted_wdls

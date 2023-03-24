@@ -4,8 +4,8 @@ from .shell_formatter import ShfmtFormatter
 from wdlformat.formatters.common import (
     Formatter,
     indent_text,
-    subset_children,
     CommentContext,
+    collect_formatters,
 )
 from typing import Dict, Type
 from ..utils import get_raw_text
@@ -19,7 +19,7 @@ class StructFormatter(Formatter):
         """Format a struct."""
 
         formatted = f"struct {input.Identifier().getText()} {{\n"
-        formatters = collect_struct_formatters(False)
+        formatters = collect_formatters(False)
 
         for child in input.children:
             if isinstance(child, CommentContext):
@@ -43,19 +43,3 @@ class StructDeclsContext(Formatter):
 
     def format(self, input: WdlV1Parser.Unbound_declsContext, indent: int = 0):
         return indent_text(" ".join(get_raw_text(input).split()) + "\n", indent)
-
-
-def collect_struct_formatters(only_public: bool = True):
-    """Collect all the formatters for structs"""
-    formatters = {}
-    for formatter in Formatter.__subclasses__():
-        if only_public and not formatter.public:
-            continue
-
-        if isinstance(formatter().formats, list):
-            for format in formatter().formats:
-                formatters[str(format)] = formatter()
-        else:
-            formatters[str(formatter().formats)] = formatter()
-
-    return formatters
