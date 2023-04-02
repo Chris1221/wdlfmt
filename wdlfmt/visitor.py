@@ -2,12 +2,13 @@ from .grammar.WdlV1Lexer import WdlV1Lexer
 from .grammar.WdlV1Parser import WdlV1Parser, ParserRuleContext
 from .grammar.WdlV1ParserVisitor import WdlV1ParserVisitor
 from antlr4 import CommonTokenStream, InputStream
+import gc
 
 # This import must come before common
 # for the dependency resolution order
 # to make all subclasses visible.
-from wdlformat.formatters import task, workflow, struct
-from wdlformat.formatters.common import (
+from wdlfmt.formatters import task, workflow, struct
+from wdlfmt.formatters.common import (
     CommentContext,
     insert_comments,
     collect_formatters,
@@ -132,6 +133,11 @@ def format_wdl(
     if isinstance(files, str):
         files = [files]
 
+    if len(files) > 1:
+        raise NotImplementedError(
+            "ANTLR4 has a memory leak; must launch multiple files in subprocesses."
+        )
+
     if return_object:
         formatted_wdls = []
 
@@ -157,3 +163,10 @@ def format_wdl(
             return formatted_wdls[0]
         else:
             return formatted_wdls
+
+
+def format_wdl_str(wdl: str):
+    """Returns the formatted version of a WDL passed in as a string."""
+    input_stream = InputStream(wdl)
+    visitor = WdlVisitor(input_stream)
+    return str(visitor)

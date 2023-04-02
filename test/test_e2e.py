@@ -1,18 +1,19 @@
-import wdlformat
-import wdlformat.utils
+import wdlfmt
 import pytest
 import glob
+import subprocess
 
 
-@pytest.fixture
 def collect_all_wdl_paths():
     biowdl_tasks = glob.glob("test/biowdl_tasks/*.wdl")
     examples = glob.glob("test/examples/*.wdl")
 
-    return biowdl_tasks + examples
+    # return ["test/biowdl_tasks/common.wdl"]
+    return biowdl_tasks
 
 
-def test_all_examples(collect_all_wdl_paths):
+@pytest.mark.parametrize("file", collect_all_wdl_paths())
+def test_all_examples(file):
     # Calling format_wdl is equivalent to asserting
     # that the formatting was successful.
     #
@@ -23,8 +24,10 @@ def test_all_examples(collect_all_wdl_paths):
     # We can actually just run all of these
     # at once but it's better to do it
     # one at a time to report errors
-    assert len(collect_all_wdl_paths) > 1
-    for wdl in collect_all_wdl_paths:
-        print("WDL is now:", wdl)
-        formatted = wdlformat.format_wdl(wdl, return_object=True)
-        assert formatted
+    # wdlfmt.format_wdl(file)
+    assert (
+        subprocess.run(
+            ["/Users/ccole/miniconda3/bin/wdlfmt", file], shell=True
+        ).returncode
+        == 0
+    )

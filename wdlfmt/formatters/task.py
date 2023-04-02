@@ -1,6 +1,6 @@
 from ..grammar.WdlV1Parser import WdlV1Parser
 from .shell_formatter import ShfmtFormatter
-from wdlformat.formatters.common import (
+from wdlfmt.formatters.common import (
     Formatter,
     indent_text,
     subset_children,
@@ -8,7 +8,7 @@ from wdlformat.formatters.common import (
     collect_formatters,
 )
 from typing import Dict, Type
-import wdlformat
+import wdlfmt
 
 from ..utils import get_raw_text
 
@@ -26,17 +26,7 @@ class TaskFormatter(Formatter):
     public = True
 
     def format(self, input: WdlV1Parser.TaskContext, indent: int = 0) -> str:
-        """Format a task.
-
-        This is an opinionated formatter that will format the task as follows:
-        - Input
-        - Command
-        - Output
-        - Runtime
-        - Parameter meta
-
-        The order of the sections is not configurable.
-        """
+        """Format a task."""
         formatted = f"task {input.Identifier().getText()} {{\n"
         formatters = collect_formatters(False)
 
@@ -139,7 +129,9 @@ class CommandFormatter(Formatter):
             ],
         )
 
-        shell_script = "".join([get_raw_text(i) for i in commands])
+        shell_script = "".join([get_raw_text(i).lstrip() for i in commands])
+
+        shell_script = "\n".join([line.lstrip() for line in shell_script.split("\n")])
 
         formatted_command = ShfmtFormatter(shell_script).format()
         formatted = "command <<<\n"
@@ -230,7 +222,7 @@ class AnyContextFormatter(Formatter):
 
 
 class CommentFormatter(Formatter):
-    formats = wdlformat.formatters.common.CommentContext
+    formats = wdlfmt.formatters.common.CommentContext
     public = True
 
     def format(

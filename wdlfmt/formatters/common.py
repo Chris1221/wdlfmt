@@ -168,13 +168,20 @@ def get_position(node):
 
 def flatten_context_tree(tree, flat=[]):
     for child in tree.children:
-        if hasattr(child, "children"):
+        if has_children(child):
             flat.append(get_position(child))
             flat = flatten_context_tree(child)
         else:
             flat.append(get_position(child))
 
     return flat
+
+
+def has_children(elm):
+    if hasattr(elm, "children"):
+        if elm.children is not None:
+            return True
+    return False
 
 
 def find_elm_with_given_index_in_tree(tree, idx):
@@ -188,7 +195,7 @@ def find_elm_with_given_index_in_tree(tree, idx):
 
     else:
         for child in tree.children:
-            if hasattr(child, "children"):
+            if has_children(child):
                 elm = find_elm_with_given_index_in_tree(child, idx)
                 if elm:
                     return elm
@@ -225,7 +232,7 @@ def insert_comment_into_tree(tree, comment, neighbour):
         return tree.parentCtx
 
     else:
-        if hasattr(tree, "children") and "Comment" not in str(type(tree)):
+        if has_children(tree) and "Comment" not in str(type(tree)):
             for child in tree.children:
                 if child == neighbour:
                     comment.top_level = "DocumentContext" in str(type(tree))

@@ -1,5 +1,5 @@
 from ..grammar.WdlV1Parser import WdlV1Parser
-from wdlformat.formatters.common import (
+from wdlfmt.formatters.common import (
     Formatter,
     indent_text,
     subset_children,

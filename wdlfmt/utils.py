@@ -1,7 +1,7 @@
 import logging
 import re
 import difflib
-import wdlformat.formatters
+import wdlfmt.formatters
 
 
 def init_logger(level="debug", file=None, name=None):
@@ -21,7 +21,7 @@ def get_raw_text(ctx):
 
     # Comments are just mocked up context objects so do not
     # have the convenience methods below
-    if isinstance(ctx, wdlformat.formatters.common.CommentContext):
+    if isinstance(ctx, wdlfmt.formatters.common.CommentContext):
         return ctx.getText() + "\n"
 
     stream = ctx.start.getInputStream()
@@ -29,7 +29,14 @@ def get_raw_text(ctx):
     start = ctx.start.start
     stop = ctx.stop.stop + 1
 
-    return stream.strdata[start:stop] + "\n"
+    raw = stream.strdata[start:stop]
+    # If there is a newline after the string we should also return that
+
+    if stop < len(stream.strdata) - 1:
+        if stream.strdata[stop + 1] == "\n":
+            raw += "\n"
+
+    return raw
 
 
 def assert_text_equal(original, formatted, check=True):
@@ -39,7 +46,11 @@ def assert_text_equal(original, formatted, check=True):
     if not check:
         return formatted
 
-    original_text = get_raw_text(original)
+    if hasattr(original, "start"):
+        original_text = get_raw_text(original)
+    else:
+        assert isinstance(original, str)
+        original_text = original
 
     regex = re.compile("[^a-zA-Z]")
 
