@@ -1,4 +1,4 @@
-# Generated from WdlV1Parser.g4 by ANTLR 4.12.0
+# Generated from WdlV1Parser.g4 by ANTLR 4.11.1
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .WdlV1Parser import WdlV1Parser
@@ -64,11 +64,6 @@ class WdlV1ParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by WdlV1Parser#string_parts.
-    def visitString_parts(self, ctx:WdlV1Parser.String_partsContext):
-        return self.visitChildren(ctx)
-
-
     # Visit a parse tree produced by WdlV1Parser#string_expr_part.
     def visitString_expr_part(self, ctx:WdlV1Parser.String_expr_partContext):
         return self.visitChildren(ctx)
@@ -79,13 +74,8 @@ class WdlV1ParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by WdlV1Parser#dquote_string.
-    def visitDquote_string(self, ctx:WdlV1Parser.Dquote_stringContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by WdlV1Parser#squote_string.
-    def visitSquote_string(self, ctx:WdlV1Parser.Squote_stringContext):
+    # Visit a parse tree produced by WdlV1Parser#string.
+    def visitString(self, ctx:WdlV1Parser.StringContext):
         return self.visitChildren(ctx)
 
 
@@ -194,8 +184,13 @@ class WdlV1ParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by WdlV1Parser#negate.
-    def visitNegate(self, ctx:WdlV1Parser.NegateContext):
+    # Visit a parse tree produced by WdlV1Parser#expr_infix5.
+    def visitExpr_infix5(self, ctx:WdlV1Parser.Expr_infix5Context):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by WdlV1Parser#pair_literal.
+    def visitPair_literal(self, ctx:WdlV1Parser.Pair_literalContext):
         return self.visitChildren(ctx)
 
 
@@ -204,23 +199,13 @@ class WdlV1ParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by WdlV1Parser#infix6.
-    def visitInfix6(self, ctx:WdlV1Parser.Infix6Context):
+    # Visit a parse tree produced by WdlV1Parser#apply.
+    def visitApply(self, ctx:WdlV1Parser.ApplyContext):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by WdlV1Parser#expr_infix6.
-    def visitExpr_infix6(self, ctx:WdlV1Parser.Expr_infix6Context):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by WdlV1Parser#member.
-    def visitMember(self, ctx:WdlV1Parser.MemberContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by WdlV1Parser#pair_literal.
-    def visitPair_literal(self, ctx:WdlV1Parser.Pair_literalContext):
+    # Visit a parse tree produced by WdlV1Parser#expression_group.
+    def visitExpression_group(self, ctx:WdlV1Parser.Expression_groupContext):
         return self.visitChildren(ctx)
 
 
@@ -239,18 +224,18 @@ class WdlV1ParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by WdlV1Parser#apply.
-    def visitApply(self, ctx:WdlV1Parser.ApplyContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by WdlV1Parser#ifthenelse.
-    def visitIfthenelse(self, ctx:WdlV1Parser.IfthenelseContext):
+    # Visit a parse tree produced by WdlV1Parser#negate.
+    def visitNegate(self, ctx:WdlV1Parser.NegateContext):
         return self.visitChildren(ctx)
 
 
     # Visit a parse tree produced by WdlV1Parser#map_literal.
     def visitMap_literal(self, ctx:WdlV1Parser.Map_literalContext):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by WdlV1Parser#ifthenelse.
+    def visitIfthenelse(self, ctx:WdlV1Parser.IfthenelseContext):
         return self.visitChildren(ctx)
 
 
@@ -266,11 +251,6 @@ class WdlV1ParserVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by WdlV1Parser#array_literal.
     def visitArray_literal(self, ctx:WdlV1Parser.Array_literalContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by WdlV1Parser#expression_group.
-    def visitExpression_group(self, ctx:WdlV1Parser.Expression_groupContext):
         return self.visitChildren(ctx)
 
 
@@ -309,18 +289,8 @@ class WdlV1ParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by WdlV1Parser#meta_string_parts.
-    def visitMeta_string_parts(self, ctx:WdlV1Parser.Meta_string_partsContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by WdlV1Parser#meta_dquote_string.
-    def visitMeta_dquote_string(self, ctx:WdlV1Parser.Meta_dquote_stringContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by WdlV1Parser#meta_squote_string.
-    def visitMeta_squote_string(self, ctx:WdlV1Parser.Meta_squote_stringContext):
+    # Visit a parse tree produced by WdlV1Parser#meta_string.
+    def visitMeta_string(self, ctx:WdlV1Parser.Meta_stringContext):
         return self.visitChildren(ctx)
 
 
@@ -374,8 +344,8 @@ class WdlV1ParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
-    # Visit a parse tree produced by WdlV1Parser#task_command_string_parts.
-    def visitTask_command_string_parts(self, ctx:WdlV1Parser.Task_command_string_partsContext):
+    # Visit a parse tree produced by WdlV1Parser#task_command_string_part.
+    def visitTask_command_string_part(self, ctx:WdlV1Parser.Task_command_string_partContext):
         return self.visitChildren(ctx)
 
 
@@ -496,16 +466,6 @@ class WdlV1ParserVisitor(ParseTreeVisitor):
 
     # Visit a parse tree produced by WdlV1Parser#document.
     def visitDocument(self, ctx:WdlV1Parser.DocumentContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by WdlV1Parser#type_document.
-    def visitType_document(self, ctx:WdlV1Parser.Type_documentContext):
-        return self.visitChildren(ctx)
-
-
-    # Visit a parse tree produced by WdlV1Parser#expr_document.
-    def visitExpr_document(self, ctx:WdlV1Parser.Expr_documentContext):
         return self.visitChildren(ctx)
 
 

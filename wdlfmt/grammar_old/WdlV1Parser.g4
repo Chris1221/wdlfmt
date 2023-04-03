@@ -44,18 +44,13 @@ number
   ;
 
 expression_placeholder_option
-  : BoolLiteral EQUAL string
-  | SEPEQUAL string
-  | DEFAULTEQUAL expr
+  : BoolLiteral EQUAL (string | number)
+  | DEFAULT EQUAL (string | number)
+  | SEP EQUAL (string | number)
   ;
 
 string_part
-  : EscStringPart
-  | StringPart
-  ;
-
-string_parts
-  : string_part*
+  : StringPart*
   ;
 
 string_expr_part
@@ -63,12 +58,12 @@ string_expr_part
   ;
 
 string_expr_with_string_part
-  : string_expr_part string_parts
+  : string_expr_part string_part
   ;
 
 string
-  : DQUOTE string_parts string_expr_with_string_part* DQUOTE #dquote_string
-  | SQUOTE string_parts string_expr_with_string_part* SQUOTE #squote_string
+  : DQUOTE string_part string_expr_with_string_part* DQUOTE
+  | SQUOTE string_part string_expr_with_string_part* SQUOTE
   ;
 
 primitive_literal
@@ -120,29 +115,21 @@ expr_infix4
   ;
 
 expr_infix5
-  : NOT expr_infix5 #negate
-  | (PLUS | MINUS) expr_infix5 #unarysigned
-  | expr_infix6 #infix6
-  ;
-
-expr_infix6
   : expr_core
-  ;
-
-member
-  : Identifier
   ;
 
 expr_core
   : Identifier LPAREN (expr (COMMA expr)* COMMA?)? RPAREN #apply
-  | expr_core LBRACK expr RBRACK #at
-  | expr_core DOT Identifier #get_name
-  | LPAREN expr RPAREN #expression_group
-  | IF expr THEN expr ELSE expr #ifthenelse
   | LBRACK (expr (COMMA expr)* COMMA?)* RBRACK #array_literal
   | LPAREN expr COMMA expr RPAREN #pair_literal
   | LBRACE (expr COLON expr (COMMA expr COLON expr)* COMMA?)* RBRACE #map_literal
-  | OBJECTLITERAL LBRACE (member COLON expr (COMMA member COLON expr)* COMMA?)* RBRACE #object_literal
+  | OBJECT_LITERAL LBRACE (Identifier COLON expr (COMMA Identifier COLON expr)* COMMA?)* RBRACE #object_literal
+  | IF expr THEN expr ELSE expr #ifthenelse
+  | LPAREN expr RPAREN #expression_group
+  | expr_core LBRACK expr RBRACK #at
+  | expr_core DOT Identifier #get_name
+  | NOT expr #negate
+  | (PLUS | MINUS) expr #unarysigned
   | primitive_literal #primitives
   | Identifier #left_name
   ;
@@ -178,17 +165,12 @@ meta_value
   ;
 
 meta_string_part
-  : MetaEscStringPart
-  | MetaStringPart
-  ;
-
-meta_string_parts
-  : meta_string_part*
+  : MetaStringPart*
   ;
 
 meta_string
-  : MetaDquote meta_string_parts MetaDquote #meta_dquote_string
-  | MetaSquote meta_string_parts MetaSquote #meta_squote_string
+  : MetaDquote meta_string_part MetaDquote
+  | MetaSquote meta_string_part MetaSquote
   ;
 
 meta_array
@@ -214,7 +196,7 @@ parameter_meta
   ;
 
 meta
-  :	META BeginMeta meta_kv* EndMeta
+  :  META BeginMeta meta_kv* EndMeta
   ;
 
 task_runtime_kv
@@ -233,7 +215,7 @@ task_output
   : OUTPUT LBRACE (bound_decls)* RBRACE
   ;
 
-task_command_string_parts
+task_command_string_part
   : CommandStringPart*
   ;
 
@@ -242,12 +224,12 @@ task_command_expr_part
   ;
 
 task_command_expr_with_string
-  : task_command_expr_part task_command_string_parts
+  : task_command_expr_part task_command_string_part
   ;
 
 task_command
-  : COMMAND BeginLBrace task_command_string_parts task_command_expr_with_string* EndCommand
-  | COMMAND BeginHereDoc task_command_string_parts task_command_expr_with_string* EndCommand
+  : COMMAND BeginLBrace task_command_string_part task_command_expr_with_string* EndCommand
+  | COMMAND BeginHereDoc task_command_string_part task_command_expr_with_string* EndCommand
   ;
 
 task_element
@@ -292,7 +274,7 @@ call_name
   ;
 
 call
-  : CALL call_name call_alias?	call_body?
+  : CALL call_name call_alias?  call_body?
   ;
 
 scatter
@@ -331,12 +313,4 @@ document_element
 
 document
   : version document_element* (workflow document_element*)? EOF
-  ;
-
-type_document
-  : wdl_type EOF
-  ;
-
-expr_document
-  : expr EOF
   ;

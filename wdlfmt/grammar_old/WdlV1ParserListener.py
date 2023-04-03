@@ -1,4 +1,4 @@
-# Generated from WdlV1Parser.g4 by ANTLR 4.12.0
+# Generated from WdlV1Parser.g4 by ANTLR 4.11.1
 from antlr4 import *
 if __name__ is not None and "." in __name__:
     from .WdlV1Parser import WdlV1Parser
@@ -107,15 +107,6 @@ class WdlV1ParserListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by WdlV1Parser#string_parts.
-    def enterString_parts(self, ctx:WdlV1Parser.String_partsContext):
-        pass
-
-    # Exit a parse tree produced by WdlV1Parser#string_parts.
-    def exitString_parts(self, ctx:WdlV1Parser.String_partsContext):
-        pass
-
-
     # Enter a parse tree produced by WdlV1Parser#string_expr_part.
     def enterString_expr_part(self, ctx:WdlV1Parser.String_expr_partContext):
         pass
@@ -134,21 +125,12 @@ class WdlV1ParserListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by WdlV1Parser#dquote_string.
-    def enterDquote_string(self, ctx:WdlV1Parser.Dquote_stringContext):
+    # Enter a parse tree produced by WdlV1Parser#string.
+    def enterString(self, ctx:WdlV1Parser.StringContext):
         pass
 
-    # Exit a parse tree produced by WdlV1Parser#dquote_string.
-    def exitDquote_string(self, ctx:WdlV1Parser.Dquote_stringContext):
-        pass
-
-
-    # Enter a parse tree produced by WdlV1Parser#squote_string.
-    def enterSquote_string(self, ctx:WdlV1Parser.Squote_stringContext):
-        pass
-
-    # Exit a parse tree produced by WdlV1Parser#squote_string.
-    def exitSquote_string(self, ctx:WdlV1Parser.Squote_stringContext):
+    # Exit a parse tree produced by WdlV1Parser#string.
+    def exitString(self, ctx:WdlV1Parser.StringContext):
         pass
 
 
@@ -341,12 +323,21 @@ class WdlV1ParserListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by WdlV1Parser#negate.
-    def enterNegate(self, ctx:WdlV1Parser.NegateContext):
+    # Enter a parse tree produced by WdlV1Parser#expr_infix5.
+    def enterExpr_infix5(self, ctx:WdlV1Parser.Expr_infix5Context):
         pass
 
-    # Exit a parse tree produced by WdlV1Parser#negate.
-    def exitNegate(self, ctx:WdlV1Parser.NegateContext):
+    # Exit a parse tree produced by WdlV1Parser#expr_infix5.
+    def exitExpr_infix5(self, ctx:WdlV1Parser.Expr_infix5Context):
+        pass
+
+
+    # Enter a parse tree produced by WdlV1Parser#pair_literal.
+    def enterPair_literal(self, ctx:WdlV1Parser.Pair_literalContext):
+        pass
+
+    # Exit a parse tree produced by WdlV1Parser#pair_literal.
+    def exitPair_literal(self, ctx:WdlV1Parser.Pair_literalContext):
         pass
 
 
@@ -359,39 +350,21 @@ class WdlV1ParserListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by WdlV1Parser#infix6.
-    def enterInfix6(self, ctx:WdlV1Parser.Infix6Context):
+    # Enter a parse tree produced by WdlV1Parser#apply.
+    def enterApply(self, ctx:WdlV1Parser.ApplyContext):
         pass
 
-    # Exit a parse tree produced by WdlV1Parser#infix6.
-    def exitInfix6(self, ctx:WdlV1Parser.Infix6Context):
-        pass
-
-
-    # Enter a parse tree produced by WdlV1Parser#expr_infix6.
-    def enterExpr_infix6(self, ctx:WdlV1Parser.Expr_infix6Context):
-        pass
-
-    # Exit a parse tree produced by WdlV1Parser#expr_infix6.
-    def exitExpr_infix6(self, ctx:WdlV1Parser.Expr_infix6Context):
+    # Exit a parse tree produced by WdlV1Parser#apply.
+    def exitApply(self, ctx:WdlV1Parser.ApplyContext):
         pass
 
 
-    # Enter a parse tree produced by WdlV1Parser#member.
-    def enterMember(self, ctx:WdlV1Parser.MemberContext):
+    # Enter a parse tree produced by WdlV1Parser#expression_group.
+    def enterExpression_group(self, ctx:WdlV1Parser.Expression_groupContext):
         pass
 
-    # Exit a parse tree produced by WdlV1Parser#member.
-    def exitMember(self, ctx:WdlV1Parser.MemberContext):
-        pass
-
-
-    # Enter a parse tree produced by WdlV1Parser#pair_literal.
-    def enterPair_literal(self, ctx:WdlV1Parser.Pair_literalContext):
-        pass
-
-    # Exit a parse tree produced by WdlV1Parser#pair_literal.
-    def exitPair_literal(self, ctx:WdlV1Parser.Pair_literalContext):
+    # Exit a parse tree produced by WdlV1Parser#expression_group.
+    def exitExpression_group(self, ctx:WdlV1Parser.Expression_groupContext):
         pass
 
 
@@ -422,21 +395,12 @@ class WdlV1ParserListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by WdlV1Parser#apply.
-    def enterApply(self, ctx:WdlV1Parser.ApplyContext):
+    # Enter a parse tree produced by WdlV1Parser#negate.
+    def enterNegate(self, ctx:WdlV1Parser.NegateContext):
         pass
 
-    # Exit a parse tree produced by WdlV1Parser#apply.
-    def exitApply(self, ctx:WdlV1Parser.ApplyContext):
-        pass
-
-
-    # Enter a parse tree produced by WdlV1Parser#ifthenelse.
-    def enterIfthenelse(self, ctx:WdlV1Parser.IfthenelseContext):
-        pass
-
-    # Exit a parse tree produced by WdlV1Parser#ifthenelse.
-    def exitIfthenelse(self, ctx:WdlV1Parser.IfthenelseContext):
+    # Exit a parse tree produced by WdlV1Parser#negate.
+    def exitNegate(self, ctx:WdlV1Parser.NegateContext):
         pass
 
 
@@ -446,6 +410,15 @@ class WdlV1ParserListener(ParseTreeListener):
 
     # Exit a parse tree produced by WdlV1Parser#map_literal.
     def exitMap_literal(self, ctx:WdlV1Parser.Map_literalContext):
+        pass
+
+
+    # Enter a parse tree produced by WdlV1Parser#ifthenelse.
+    def enterIfthenelse(self, ctx:WdlV1Parser.IfthenelseContext):
+        pass
+
+    # Exit a parse tree produced by WdlV1Parser#ifthenelse.
+    def exitIfthenelse(self, ctx:WdlV1Parser.IfthenelseContext):
         pass
 
 
@@ -473,15 +446,6 @@ class WdlV1ParserListener(ParseTreeListener):
 
     # Exit a parse tree produced by WdlV1Parser#array_literal.
     def exitArray_literal(self, ctx:WdlV1Parser.Array_literalContext):
-        pass
-
-
-    # Enter a parse tree produced by WdlV1Parser#expression_group.
-    def enterExpression_group(self, ctx:WdlV1Parser.Expression_groupContext):
-        pass
-
-    # Exit a parse tree produced by WdlV1Parser#expression_group.
-    def exitExpression_group(self, ctx:WdlV1Parser.Expression_groupContext):
         pass
 
 
@@ -548,30 +512,12 @@ class WdlV1ParserListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by WdlV1Parser#meta_string_parts.
-    def enterMeta_string_parts(self, ctx:WdlV1Parser.Meta_string_partsContext):
+    # Enter a parse tree produced by WdlV1Parser#meta_string.
+    def enterMeta_string(self, ctx:WdlV1Parser.Meta_stringContext):
         pass
 
-    # Exit a parse tree produced by WdlV1Parser#meta_string_parts.
-    def exitMeta_string_parts(self, ctx:WdlV1Parser.Meta_string_partsContext):
-        pass
-
-
-    # Enter a parse tree produced by WdlV1Parser#meta_dquote_string.
-    def enterMeta_dquote_string(self, ctx:WdlV1Parser.Meta_dquote_stringContext):
-        pass
-
-    # Exit a parse tree produced by WdlV1Parser#meta_dquote_string.
-    def exitMeta_dquote_string(self, ctx:WdlV1Parser.Meta_dquote_stringContext):
-        pass
-
-
-    # Enter a parse tree produced by WdlV1Parser#meta_squote_string.
-    def enterMeta_squote_string(self, ctx:WdlV1Parser.Meta_squote_stringContext):
-        pass
-
-    # Exit a parse tree produced by WdlV1Parser#meta_squote_string.
-    def exitMeta_squote_string(self, ctx:WdlV1Parser.Meta_squote_stringContext):
+    # Exit a parse tree produced by WdlV1Parser#meta_string.
+    def exitMeta_string(self, ctx:WdlV1Parser.Meta_stringContext):
         pass
 
 
@@ -665,12 +611,12 @@ class WdlV1ParserListener(ParseTreeListener):
         pass
 
 
-    # Enter a parse tree produced by WdlV1Parser#task_command_string_parts.
-    def enterTask_command_string_parts(self, ctx:WdlV1Parser.Task_command_string_partsContext):
+    # Enter a parse tree produced by WdlV1Parser#task_command_string_part.
+    def enterTask_command_string_part(self, ctx:WdlV1Parser.Task_command_string_partContext):
         pass
 
-    # Exit a parse tree produced by WdlV1Parser#task_command_string_parts.
-    def exitTask_command_string_parts(self, ctx:WdlV1Parser.Task_command_string_partsContext):
+    # Exit a parse tree produced by WdlV1Parser#task_command_string_part.
+    def exitTask_command_string_part(self, ctx:WdlV1Parser.Task_command_string_partContext):
         pass
 
 
@@ -887,24 +833,6 @@ class WdlV1ParserListener(ParseTreeListener):
 
     # Exit a parse tree produced by WdlV1Parser#document.
     def exitDocument(self, ctx:WdlV1Parser.DocumentContext):
-        pass
-
-
-    # Enter a parse tree produced by WdlV1Parser#type_document.
-    def enterType_document(self, ctx:WdlV1Parser.Type_documentContext):
-        pass
-
-    # Exit a parse tree produced by WdlV1Parser#type_document.
-    def exitType_document(self, ctx:WdlV1Parser.Type_documentContext):
-        pass
-
-
-    # Enter a parse tree produced by WdlV1Parser#expr_document.
-    def enterExpr_document(self, ctx:WdlV1Parser.Expr_documentContext):
-        pass
-
-    # Exit a parse tree produced by WdlV1Parser#expr_document.
-    def exitExpr_document(self, ctx:WdlV1Parser.Expr_documentContext):
         pass
 
 

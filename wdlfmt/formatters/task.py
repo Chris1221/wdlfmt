@@ -124,7 +124,7 @@ class CommandFormatter(Formatter):
         commands = subset_children(
             input.children,
             [
-                WdlV1Parser.Task_command_string_partContext,
+                WdlV1Parser.Task_command_string_partsContext,
                 WdlV1Parser.Task_command_expr_with_stringContext,
             ],
         )

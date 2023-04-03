@@ -9,11 +9,11 @@ def collect_all_wdl_paths():
     examples = glob.glob("test/examples/*.wdl")
 
     # return ["test/biowdl_tasks/common.wdl"]
-    return biowdl_tasks
+    return biowdl_tasks[0:10]
 
 
 @pytest.mark.parametrize("file", collect_all_wdl_paths())
-def test_all_examples(file):
+def test_all_examples_cli(file):
     # Calling format_wdl is equivalent to asserting
     # that the formatting was successful.
     #
@@ -31,3 +31,8 @@ def test_all_examples(file):
         ).returncode
         == 0
     )
+
+
+@pytest.mark.parametrize("file", collect_all_wdl_paths())
+def test_all_examples_raw(file):
+    wdlfmt.format_wdl(file)

@@ -3,6 +3,7 @@
 import pytest
 from tempfile import NamedTemporaryFile
 import subprocess
+import wdlfmt
 
 
 @pytest.fixture
@@ -160,6 +161,12 @@ def md5():
         }
     }
     """
+
+
+def test_string(common_error, unicycler, md5):
+    cases = [common_error, unicycler, md5]
+    for case in cases:
+        wdlfmt.format_wdl_str(common_error)
 
 
 def test_cases(common_error, unicycler, md5):

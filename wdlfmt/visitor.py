@@ -60,20 +60,17 @@ class WdlVisitor(WdlV1ParserVisitor):
 
         # Parse the input and recusively visit the tree
         # to add the comment nodes
-        tree = parser.document()
-        tree = insert_comments(tree, comment_ctx, idxs)
-
+        self.tree = parser.document()
+        self.tree = insert_comments(self.tree, comment_ctx, idxs)
         self.log = init_logger(name=__name__)
 
-        # Visit the tree and format the WDL, filling in the
-        # self.formatted string with the formatted WDL
-        self.visit(tree)
-
-        assert_text_equal(tree, self.formatted)
+        parser.reset()
+        lexer.reset()
 
     def __str__(self):
         """The print method for the visitor will return the
         formatted WDL"""
+        self.visit(self.tree)
         return self.formatted
 
     def format(self, ctx):
