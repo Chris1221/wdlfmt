@@ -1,7 +1,9 @@
-import wdlfmt
-import pytest
 import glob
 import subprocess
+
+import pytest
+
+import wdlfmt
 
 
 def collect_all_wdl_paths():
@@ -25,12 +27,7 @@ def test_all_examples_cli(file):
     # at once but it's better to do it
     # one at a time to report errors
     # wdlfmt.format_wdl(file)
-    assert (
-        subprocess.run(
-            ["/Users/ccole/miniconda3/bin/wdlfmt", file], shell=True
-        ).returncode
-        == 0
-    )
+    assert subprocess.run(["wdlfmt", file], shell=True).returncode == 0
 
 
 @pytest.mark.parametrize("file", collect_all_wdl_paths())
