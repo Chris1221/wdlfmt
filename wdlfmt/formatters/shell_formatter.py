@@ -1,12 +1,12 @@
+import re
 import subprocess
 from abc import ABC, abstractmethod
-from tempfile import NamedTemporaryFile
 from os import remove
-import re
+from tempfile import NamedTemporaryFile
 
 
 class ShellFormatter(ABC):
-    def __init__(self, command, bin="/Users/ccole/miniconda3/bin/shfmt"):
+    def __init__(self, command, bin="shfmt"):
         self.command = command
         self.bin = bin
 

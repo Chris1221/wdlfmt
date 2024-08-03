@@ -12,4 +12,5 @@ setup(
         ],
     },
     packages=["wdlfmt"],  # same as name
+    install_requires=["shfmt-py", "antlr4-python3-runtime==4.12"],
 )

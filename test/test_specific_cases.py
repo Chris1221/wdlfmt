@@ -1,8 +1,10 @@
 # Problematic cases
 
-import pytest
-from tempfile import NamedTemporaryFile
 import subprocess
+from tempfile import NamedTemporaryFile
+
+import pytest
+
 import wdlfmt
 
 
@@ -174,9 +176,4 @@ def test_cases(common_error, unicycler, md5):
     for case in cases:
         with NamedTemporaryFile(delete=False) as tmpfile:
             tmpfile.write(case.encode())
-            assert (
-                subprocess.run(
-                    ["/Users/ccole/miniconda3/bin/wdlfmt", tmpfile.name], shell=True
-                ).returncode
-                == 0
-            )
+            assert subprocess.run(["wdlfmt", tmpfile.name], shell=True).returncode == 0
