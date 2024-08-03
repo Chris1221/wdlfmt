@@ -27,6 +27,11 @@ class WdlVisitor(WdlV1ParserVisitor):
         # token stream from the lexer
         self.formatted = ""
         lexer = WdlV1Lexer(input_stream)
+
+        lexer.atn.decisionToState = []
+        lexer.decisionsToDFA = []
+        lexer.reset()
+
         stream = CommonTokenStream(lexer)
 
         # The parser has three channels:
@@ -57,6 +62,9 @@ class WdlVisitor(WdlV1ParserVisitor):
         # comment text.
         comment_ctx = [CommentContext(token) for token in comment_tokens]
         parser = WdlV1Parser(stream)
+        parser.sharedContextCache.cache.clear()
+        # parser.atn.decisionToState = []
+        # parser.decisionsToDFA = []
 
         # Parse the input and recusively visit the tree
         # to add the comment nodes
@@ -66,6 +74,7 @@ class WdlVisitor(WdlV1ParserVisitor):
 
         parser.reset()
         lexer.reset()
+        parser.sharedContextCache.cache.clear()
 
     def __str__(self):
         """The print method for the visitor will return the
