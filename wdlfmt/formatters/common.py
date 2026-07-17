@@ -166,11 +166,13 @@ def get_position(node):
         return node.symbol.tokenIndex
 
 
-def flatten_context_tree(tree, flat=[]):
+def flatten_context_tree(tree, flat=None):
+    if flat is None:
+        flat = []
     for child in tree.children:
         if has_children(child):
             flat.append(get_position(child))
-            flat = flatten_context_tree(child)
+            flat = flatten_context_tree(child, flat)
         else:
             flat.append(get_position(child))
 
