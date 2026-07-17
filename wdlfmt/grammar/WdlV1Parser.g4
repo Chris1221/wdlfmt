@@ -46,6 +46,7 @@ number
 expression_placeholder_option
   : BoolLiteral EQUAL string
   | SEPEQUAL string
+  | Identifier EQUAL string
   | DEFAULTEQUAL expr
   ;
 
