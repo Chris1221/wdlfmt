@@ -1,0 +1,46 @@
+[project]
+name = "wdlfmt"
+version = "0.1.0"
+description = "Formatter for WDL files"
+authors = [
+    {name = "Chris Cole", email = "chris.c.1221@gmail.com"}
+]
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "MIT"}
+dependencies = [
+    "antlr4-python3-runtime==4.12",
+    "shfmt-py",
+]
+
+[project.scripts]
+wdlfmt = "wdlfmt.cli:cli"
+
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+packages = ["wdlfmt", "wdlfmt.formatters", "wdlfmt.grammar"]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["linux-64", "osx-64", "osx-arm64"]
+
+[tool.pixi.pypi-dependencies]
+wdlfmt = {path = ".", editable = true}
+
+[tool.pixi.dependencies]
+python = ">=3.9"
+pip = "*"
+
+[tool.pixi.feature.dev.dependencies]
+pytest = "*"
+flake8 = "*"
+
+[tool.pixi.feature.dev.tasks]
+test = "pytest test"
+lint = "flake8 wdlfmt test"
+
+[tool.pixi.environments]
+default = ["dev"]
