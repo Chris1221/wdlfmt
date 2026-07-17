@@ -1,18 +1,15 @@
-import gc
 from typing import List
 
 from antlr4 import CommonTokenStream, InputStream
 
-# This import must come before common
-# for the dependency resolution order
-# to make all subclasses visible.
-from wdlfmt.formatters import struct, task, workflow
+# Imported for side effects: registers Formatter subclasses before collect_formatters runs.
+from wdlfmt.formatters import struct, task, workflow  # noqa: F401
 from wdlfmt.formatters.common import CommentContext, collect_formatters, insert_comments
 
 from .grammar.WdlV1Lexer import WdlV1Lexer
 from .grammar.WdlV1Parser import ParserRuleContext, WdlV1Parser
 from .grammar.WdlV1ParserVisitor import WdlV1ParserVisitor
-from .utils import assert_text_equal, get_raw_text, init_logger
+from .utils import assert_text_equal, init_logger
 
 
 class WdlVisitor(WdlV1ParserVisitor):
@@ -135,7 +132,8 @@ def add_footer(formatted):
     # Add the date and time and a link to the GIthub repo
     import datetime
 
-    footer = f"# Formatted by wdlfmt (https://github.com/Chris1221/wdlfmt) on {datetime.datetime.now().strftime('%m/%d/%Y, %H:%M:%S')}\n"
+    ts = datetime.datetime.now().strftime('%m/%d/%Y, %H:%M:%S')
+    footer = f"# Formatted by wdlfmt (https://github.com/Chris1221/wdlfmt) on {ts}\n"
 
     # Let's check if there's already a footer
     # and if so replace it

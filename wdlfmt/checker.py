@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import re
 import sys
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 
 
@@ -165,8 +165,8 @@ class StyleChecker:
         for i, block in enumerate(blocks):
             # Only care if there are multiple non-trivial command lines
             cmd_lines = [
-                l.strip() for l in block.splitlines()
-                if l.strip() and not l.strip().startswith("#")
+                ln.strip() for ln in block.splitlines()
+                if ln.strip() and not ln.strip().startswith("#")
             ]
             if len(cmd_lines) > 1 and "set -e -o pipefail" not in block:
                 # Try to find what task this belongs to (rough heuristic)
@@ -187,8 +187,6 @@ class StyleChecker:
         for pattern, kind in [(r"\btask\s+(\w+)\s*\{", "task"), (r"\bworkflow\s+(\w+)\s*\{", "workflow")]:
             for m in re.finditer(pattern, self.text):
                 name = m.group(1)
-                # Find the extent of the block by scanning for matching brace
-                block_start = m.start()
                 brace_pos = self.text.index("{", m.start())
                 depth = 0
                 block_end = brace_pos
@@ -275,7 +273,7 @@ def print_checklist(results: list[CheckResult], file=None) -> None:
     n_warn = sum(1 for r in results if r.status == Status.WARN)
 
     width = 54
-    print(f"\nBioWDL Style Guide Compliance", file=file)
+    print("\nBioWDL Style Guide Compliance", file=file)
     print("─" * width, file=file)
     print("  Formatter guarantees", file=file)
     for r in guaranteed:

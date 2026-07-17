@@ -7,7 +7,6 @@ from wdlfmt.formatters.common import (
     CommentContext,
     collect_formatters,
 )
-from typing import Dict, Type
 import wdlfmt
 
 from ..utils import get_raw_text
@@ -91,8 +90,6 @@ class InputFormatter(Formatter):
 
     def format(self, input: WdlV1Parser.Task_inputContext, indent: int = 1) -> str:
         formatters = collect_formatters(False)
-
-        declsContexts = subset_children(input.children, WdlV1Parser.Any_declsContext)
 
         formatted = ""
 

@@ -5,7 +5,6 @@ from wdlfmt.formatters.common import (
     subset_children,
     collect_formatters,
 )
-from typing import Dict
 from ..utils import get_raw_text
 
 
@@ -66,7 +65,7 @@ class ParameterMetaFormatter(Formatter):
     def format(self, input: WdlV1Parser.Parameter_metaContext, indent: int = 0) -> str:
         formatters = collect_formatters(False)
 
-        formatted = f"parameter_meta {{\n"
+        formatted = "parameter_meta {\n"
         for child in input.children:
             if "Comment" in str(type(child)):
                 formatted += f"{child.getText()}\n"

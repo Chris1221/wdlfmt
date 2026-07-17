@@ -11,7 +11,7 @@ import wdlfmt
 @pytest.fixture
 def common_error():
     return """
-    version 1.0 
+    version 1.0
 
     # This task will fail if the MD5sum doesn't match the file.
     task CheckFileMD5 {
@@ -135,7 +135,7 @@ def unicycler():
 def md5():
     """This one works on the command line but not in python...?"""
     return """
-    version 1.0 
+    version 1.0
 
     # This task will fail if the MD5sum doesn't match the file.
     task CheckFileMD5 {

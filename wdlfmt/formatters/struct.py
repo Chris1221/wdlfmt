@@ -1,13 +1,11 @@
 # A module for struct formatters
 from ..grammar.WdlV1Parser import WdlV1Parser
-from .shell_formatter import ShfmtFormatter
 from wdlfmt.formatters.common import (
     Formatter,
     indent_text,
     CommentContext,
     collect_formatters,
 )
-from typing import Dict, Type
 from ..utils import get_raw_text
 
 

@@ -8,8 +8,6 @@ import wdlfmt
 
 def collect_all_wdl_paths():
     biowdl_tasks = glob.glob("test/biowdl_tasks/*.wdl")
-    examples = glob.glob("test/examples/*.wdl")
-
     # return ["test/biowdl_tasks/common.wdl"]
     return biowdl_tasks[0:10]
 

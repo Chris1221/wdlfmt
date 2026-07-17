@@ -1,6 +1,6 @@
-from . import formatters
-from .visitor import format_wdl, format_wdl_str
-from .checker import StyleChecker, CheckResult, Status
+from . import formatters  # noqa: F401
+from .visitor import format_wdl, format_wdl_str  # noqa: F401
+from .checker import StyleChecker, CheckResult, Status  # noqa: F401
 
 
 def check_style(wdl: str) -> list:
