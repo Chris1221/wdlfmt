@@ -152,11 +152,22 @@ def add_footer(formatted):
 def format_wdl(
     files: List[str] = "test/test_md5.wdl", in_place: bool = False, return_object=False
 ):
-    """Format a WDL file
+    """Format one or more WDL files on disk.
 
     Args:
-        files (List[str]): List of WDL files to format (can also be a string)
-        in_place (bool, optional): Whether to edit the file in place. Defaults to False.
+        files: Path(s) to WDL file(s) to format. Accepts a single string or a list.
+        in_place: If `True`, overwrite each file with its formatted content.
+            If `False` (default), print formatted output to stdout.
+        return_object: If `True`, return the formatted text instead of printing.
+            Single file → `str`; multiple files → `list[str]`.
+            Ignored when `in_place=True`.
+
+    Returns:
+        The formatted WDL string(s) when `return_object=True`, otherwise `None`.
+
+    Raises:
+        ValueError: If `return_object=True` but no files were successfully formatted.
+        Exception: Re-raises any parse or formatting error from the underlying visitor.
     """
     if isinstance(files, str):
         files = [files]
@@ -196,8 +207,15 @@ def format_wdl(
             return formatted_wdls
 
 
-def format_wdl_str(wdl: str):
-    """Returns the formatted version of a WDL passed in as a string."""
+def format_wdl_str(wdl: str) -> str:
+    """Format a WDL document passed as a string.
+
+    Args:
+        wdl: The raw WDL source text.
+
+    Returns:
+        The formatted WDL string. No footer is added (unlike `format_wdl`).
+    """
     input_stream = InputStream(wdl)
     visitor = WdlVisitor(input_stream)
     return str(visitor)

@@ -1,3 +1,32 @@
-site_name: WDLFormat
+site_name: wdlfmt
+site_description: An opinionated formatter for Workflow Description Language (WDL)
+repo_url: https://github.com/Chris1221/wdlfmt
+repo_name: Chris1221/wdlfmt
+
 theme:
   name: material
+  palette:
+    primary: teal
+
+plugins:
+  - search
+  - mkdocstrings:
+      handlers:
+        python:
+          options:
+            show_source: false
+
+nav:
+  - Home: index.md
+  - General Usage:
+      - Installation: installation.md
+      - Usage: usage.md
+      - Style Guide: style-guide.md
+  - Technical Reference:
+      - Architecture: technical/architecture.md
+      - Visitor Pattern: technical/visitor.md
+      - Adding Formatters: technical/formatters.md
+      - Grammar & ANTLR4: technical/grammar.md
+  - API Reference:
+      - Formatting: api/formatting.md
+      - Style Checker: api/checker.md

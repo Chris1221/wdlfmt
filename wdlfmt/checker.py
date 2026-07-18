@@ -13,6 +13,14 @@ from enum import Enum
 
 
 class Status(Enum):
+    """Outcome of a style check.
+
+    Attributes:
+        PASS: The rule is satisfied.
+        FAIL: The rule is violated and should be fixed.
+        WARN: Advisory — the rule is not satisfied but may not apply to all files.
+    """
+
     PASS = "pass"
     FAIL = "fail"
     WARN = "warn"
@@ -20,6 +28,14 @@ class Status(Enum):
 
 @dataclass
 class CheckResult:
+    """The result of a single style check.
+
+    Attributes:
+        rule: Human-readable name of the rule that was checked.
+        status: `PASS`, `FAIL`, or `WARN`.
+        details: Optional extra information (e.g. which names violated the rule).
+    """
+
     rule: str
     status: Status
     details: str = ""
@@ -55,6 +71,15 @@ def _struct_names(text: str) -> list[str]:
 # ── checker ───────────────────────────────────────────────────────────────────
 
 class StyleChecker:
+    """Check a formatted WDL string for BioWDL style guide compliance.
+
+    Operates on already-formatted text using regex — no re-parsing required.
+    Call `run_all()` to execute every check and get a list of `CheckResult` objects.
+
+    Args:
+        formatted: The formatted WDL source text to check.
+    """
+
     def __init__(self, formatted: str):
         self.text = formatted
         self.lines = formatted.splitlines()
