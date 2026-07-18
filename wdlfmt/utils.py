@@ -5,7 +5,7 @@ import re
 import wdlfmt.formatters
 
 
-def init_logger(level="debug", file=None, name=None):
+def init_logger(level="warning", file=None, name=None):
     """Initiate a logging instance for the model."""
 
     assert level.upper() in dir(logging), f"Invalid log level ({level})"
