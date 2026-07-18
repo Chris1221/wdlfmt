@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.2.0](https://github.com/Chris1221/wdlfmt/compare/v0.1.3...v0.2.0) (2026-07-18)
+
+
+### Features
+
+* add --check / -c flag for CI format enforcement ([66a3626](https://github.com/Chris1221/wdlfmt/commit/66a362671964cab3d604458854cf0b4238c2c7be))
+
+
+### Documentation
+
+* link to live check-formatting workflow from usage page ([e4c5925](https://github.com/Chris1221/wdlfmt/commit/e4c5925d41cdb926c27c7924d329d16f611066a6))
+
 ## [0.1.3](https://github.com/Chris1221/wdlfmt/compare/v0.1.2...v0.1.3) (2026-07-18)
 
 
