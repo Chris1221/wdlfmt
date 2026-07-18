@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/Chris1221/wdlfmt/compare/v0.1.1...v0.1.2) (2026-07-18)
+
+
+### Documentation
+
+* add MkDocs site with full documentation ([8badf56](https://github.com/Chris1221/wdlfmt/commit/8badf56c3b8cc9a2ab88ca84164a504888f97c5f))
+
 ## [0.1.1](https://github.com/Chris1221/wdlfmt/compare/v0.1.0...v0.1.1) (2026-07-18)
 
 
