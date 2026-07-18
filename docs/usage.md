@@ -26,6 +26,50 @@ wdlfmt my_task.wdl 2>/dev/null
 wdlfmt -i my_task.wdl
 ```
 
+### Check mode (CI enforcement)
+
+Verify that files are already correctly formatted without modifying them:
+
+```sh
+wdlfmt --check my_task.wdl
+# or
+wdlfmt -c my_task.wdl
+```
+
+Exits 0 if all files are correctly formatted, 1 if any would be changed. This is the intended way to enforce formatting in CI.
+
+**GitHub Actions:**
+
+```yaml
+- name: Set up Python
+  uses: actions/setup-python@v5
+  with:
+    python-version: '3.x'
+
+- name: Install wdlfmt
+  run: pip install wdlfmt
+
+- name: Check WDL formatting
+  run: wdlfmt --check **/*.wdl
+```
+
+**CircleCI:**
+
+```yaml
+jobs:
+  check-wdl-formatting:
+    docker:
+      - image: cimg/python:3.12
+    steps:
+      - checkout
+      - run:
+          name: Install wdlfmt
+          command: pip install wdlfmt
+      - run:
+          name: Check WDL formatting
+          command: wdlfmt --check **/*.wdl
+```
+
 ### Multiple files
 
 ```sh
@@ -44,6 +88,7 @@ wdlfmt --no-check my_task.wdl
 |------|---------|-------------|
 | `files` (positional) | — | One or more WDL files to format |
 | `-i`, `--in-place` | off | Edit files in place instead of printing to stdout |
+| `-c`, `--check` | off | Exit 1 if any file would be reformatted; do not write output |
 | `--no-check` | off | Skip the BioWDL style guide compliance checklist |
 
 ## Python API

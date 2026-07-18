@@ -43,6 +43,12 @@ Suppress the checklist with `--no-check`:
 wdlfmt --no-check my_task.wdl
 ```
 
+Check if files are already formatted (CI enforcement):
+
+```sh
+wdlfmt --check my_task.wdl   # exits 0 if formatted, 1 if not
+```
+
 Redirect formatted WDL to a file while keeping the checklist visible:
 
 ```sh

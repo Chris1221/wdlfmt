@@ -6,3 +6,8 @@ from .checker import StyleChecker, CheckResult, Status  # noqa: F401
 def check_style(wdl: str) -> list:
     """Return a list of CheckResult for the given formatted WDL string."""
     return StyleChecker(wdl).run_all()
+
+
+def is_formatted(wdl: str) -> bool:
+    """Return True if the WDL string is already correctly formatted."""
+    return format_wdl_str(wdl) == wdl
