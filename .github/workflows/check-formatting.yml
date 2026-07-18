@@ -1,0 +1,22 @@
+name: Check WDL formatting
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Install wdlfmt
+        run: pip install wdlfmt
+
+      - name: Check WDL formatting
+        run: wdlfmt --check test/snapshots/*.expected.wdl
