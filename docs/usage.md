@@ -38,6 +38,8 @@ wdlfmt -c my_task.wdl
 
 Exits 0 if all files are correctly formatted, 1 if any would be changed. This is the intended way to enforce formatting in CI.
 
+A [live example workflow](https://github.com/Chris1221/wdlfmt/blob/main/.github/workflows/check-formatting.yml) runs on every push to the wdlfmt repository itself.
+
 **GitHub Actions:**
 
 ```yaml
