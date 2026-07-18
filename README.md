@@ -1,6 +1,6 @@
 # wdlfmt — a formatter for Workflow Description Language (WDL)
 
-[![PyPI version](https://img.shields.io/pypi/v/wdlfmt.svg)](https://pypi.org/project/wdlfmt/) [![CI](https://github.com/Chris1221/wdlfmt/actions/workflows/python-package.yml/badge.svg)](https://github.com/Chris1221/wdlfmt/actions/workflows/python-package.yml) [![Python versions](https://img.shields.io/pypi/pyversions/wdlfmt.svg)](https://pypi.org/project/wdlfmt/) [![Downloads](https://pepy.tech/badge/wdlfmt)](https://pepy.tech/project/wdlfmt) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![PyPI version](https://img.shields.io/pypi/v/wdlfmt.svg)](https://pypi.org/project/wdlfmt/) [![CI](https://github.com/Chris1221/wdlfmt/actions/workflows/python-package.yml/badge.svg)](https://github.com/Chris1221/wdlfmt/actions/workflows/python-package.yml) [![Python versions](https://img.shields.io/pypi/pyversions/wdlfmt.svg)](https://pypi.org/project/wdlfmt/) [![Downloads](https://static.pepy.tech/badge/wdlfmt)](https://pepy.tech/projects/wdlfmt) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 `wdlfmt` is an opinionated, lossless formatter for [WDL v1.0](https://github.com/openwdl/wdl) that enforces consistency and targets the [BioWDL Style Guidelines](https://biowdl.github.io/styleGuidelines.html).
 
