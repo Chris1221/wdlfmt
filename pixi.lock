@@ -886,7 +886,7 @@ packages:
 - pypi: ./
   name: wdlfmt
   version: 0.1.0
-  sha256: 9fdcf794dd40a55afbadf590e3800ca79bcb1bb753b1f57e206a2746e27441f2
+  sha256: ad9c666c3d1903fa133cd6e51826f9e17a2f8fa5047d3b93f547ae6f66034191
   requires_dist:
   - antlr4-python3-runtime==4.12
   - shfmt-py
