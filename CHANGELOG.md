@@ -1,5 +1,18 @@
 # Changelog
 
+## [0.1.1](https://github.com/Chris1221/wdlfmt/compare/v0.1.0...v0.1.1) (2026-07-18)
+
+
+### Bug Fixes
+
+* add Python version classifiers and fix pepy.tech badge URL ([fae8958](https://github.com/Chris1221/wdlfmt/commit/fae8958f8660eedb04e782d4164894be14ae7558))
+* resolve shfmt binary relative to sys.executable ([0968e7b](https://github.com/Chris1221/wdlfmt/commit/0968e7bee2eec954473965648a1bde6d2287fe3c))
+
+
+### Documentation
+
+* update README with PyPI install, badges, and technical overview ([39dcc5e](https://github.com/Chris1221/wdlfmt/commit/39dcc5e67d87b49653c63b97849b5cbee2ddeae9))
+
 ## 0.1.0 (2026-07-18)
 
 
