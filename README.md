@@ -1,6 +1,6 @@
 # wdlfmt — a formatter for Workflow Description Language (WDL)
 
-![Status warning](https://img.shields.io/badge/Status-Unstable_(Under_development)-green)
+[![PyPI version](https://img.shields.io/pypi/v/wdlfmt.svg)](https://pypi.org/project/wdlfmt/) [![CI](https://github.com/Chris1221/wdlfmt/actions/workflows/python-package.yml/badge.svg)](https://github.com/Chris1221/wdlfmt/actions/workflows/python-package.yml) [![Python versions](https://img.shields.io/pypi/pyversions/wdlfmt.svg)](https://pypi.org/project/wdlfmt/) [![Downloads](https://pepy.tech/badge/wdlfmt)](https://pepy.tech/project/wdlfmt) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 `wdlfmt` is an opinionated, lossless formatter for [WDL v1.0](https://github.com/openwdl/wdl) that enforces consistency and targets the [BioWDL Style Guidelines](https://biowdl.github.io/styleGuidelines.html).
 
@@ -12,15 +12,17 @@
 ## Installation
 
 ```sh
-git clone https://github.com/Chris1221/wdlfmt.git
-pip install -e wdlfmt
+pip install wdlfmt
 ```
 
-Or with [pixi](https://pixi.sh):
+> **Note:** pip >= 23.0 is required. If you see the package install as `UNKNOWN`, upgrade pip first: `pip install --upgrade pip`
+
+For development, clone the repo and use [pixi](https://pixi.sh):
 
 ```sh
 git clone https://github.com/Chris1221/wdlfmt.git
 cd wdlfmt && pixi install
+pixi run test
 ```
 
 ## Usage
@@ -116,3 +118,17 @@ results = wdlfmt.check_style(formatted)
 for r in results:
     print(r.rule, r.status.value, r.details)
 ```
+
+## Technical overview
+
+`wdlfmt` is built on [ANTLR4](https://www.antlr.org/) and a visitor-pattern formatter registry.
+
+**Parsing.** The WDL v1.0 grammar (`wdlfmt/grammar/WdlV1Lexer.g4` and `WdlV1Parser.g4`) is compiled to Python by ANTLR4. Parsing produces a typed parse tree where every node is a strongly-typed context object (e.g. `TaskContext`, `Task_commandContext`).
+
+**Comment preservation.** WDL comments (`#`) are placed on a separate ANTLR token channel (channel 2) and are invisible to the default parse tree walk. `wdlfmt` extracts them from the token stream before visiting the tree, injects them as lightweight `CommentContext` nodes at the correct positions, and then emits them as part of the formatted output. This makes formatting lossless.
+
+**Formatter registry.** `wdlfmt/formatters/` contains a subclass of `Formatter` for each WDL context type (`TaskFormatter`, `WorkflowFormatter`, `StructFormatter`, etc.). Each subclass declares which context type it handles via a `formats` class attribute. The registry is built at import time by inspecting all `Formatter` subclasses, so adding support for a new context type requires only a new subclass — no wiring code.
+
+**Command block formatting.** WDL `command <<<` blocks contain shell script. `wdlfmt` extracts the shell body, replaces WDL interpolation expressions (`~{...}`) with safe placeholders, passes the result through [`shfmt`](https://github.com/mvdan/sh) (bundled via `shfmt-py`), then restores the original expressions. This ensures shell code inside WDL tasks is also consistently formatted.
+
+**Style checker.** The `StyleChecker` in `wdlfmt/checker.py` operates on the already-formatted text using regex — no re-parsing. This keeps it fast and decoupled from the formatter internals.
