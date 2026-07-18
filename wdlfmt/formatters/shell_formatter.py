@@ -1,12 +1,22 @@
+import os
 import re
 import subprocess
+import sys
 from abc import ABC, abstractmethod
 from os import remove
 from tempfile import NamedTemporaryFile
 
 
+def _find_bin(name: str) -> str:
+    """Return the absolute path to a binary co-installed with this Python, or fall back to name."""
+    candidate = os.path.join(os.path.dirname(os.path.abspath(sys.executable)), name)
+    if os.path.isfile(candidate) and os.access(candidate, os.X_OK):
+        return candidate
+    return name
+
+
 class ShellFormatter(ABC):
-    def __init__(self, command, bin="shfmt"):
+    def __init__(self, command, bin=_find_bin("shfmt")):
         self.command = command
         self.bin = bin
 
