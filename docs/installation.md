@@ -6,12 +6,6 @@
 pip install wdlfmt
 ```
 
-!!! note
-    pip >= 23.0 is required. If the package installs as `UNKNOWN`, upgrade pip first:
-    ```sh
-    pip install --upgrade pip
-    ```
-
 Verify the install:
 
 ```sh

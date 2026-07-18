@@ -15,8 +15,6 @@
 pip install wdlfmt
 ```
 
-> **Note:** pip >= 23.0 is required. If you see the package install as `UNKNOWN`, upgrade pip first: `pip install --upgrade pip`
-
 For development, clone the repo and use [pixi](https://pixi.sh):
 
 ```sh
