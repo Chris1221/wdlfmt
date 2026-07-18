@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.3](https://github.com/Chris1221/wdlfmt/compare/v0.1.2...v0.1.3) (2026-07-18)
+
+
+### Documentation
+
+* remove incorrect pip&gt;=23 requirement for PyPI install ([50a4a9f](https://github.com/Chris1221/wdlfmt/commit/50a4a9f8350df64bfa7df043a94d13aa0f8ab4ee))
+
 ## [0.1.2](https://github.com/Chris1221/wdlfmt/compare/v0.1.1...v0.1.2) (2026-07-18)
 
 
