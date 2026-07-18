@@ -1,6 +1,6 @@
 [project]
 name = "wdlfmt"
-version = "0.1.0"
+version = "0.1.1"
 description = "Formatter for WDL files"
 authors = [
     {name = "Chris Cole", email = "chris.c.1221@gmail.com"}
