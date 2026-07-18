@@ -16,7 +16,7 @@ jobs:
           python-version: '3.x'
 
       - name: Install wdlfmt
-        run: pip install wdlfmt
+        run: pip install .
 
       - name: Check WDL formatting
         run: wdlfmt --check test/snapshots/*.expected.wdl
